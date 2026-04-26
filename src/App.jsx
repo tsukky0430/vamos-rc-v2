@@ -325,6 +325,7 @@ function TTPage({ttData,onOpenMember}){
                 <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3}}>
                   <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em"}}>{row.memberName}</span>
                   {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
+                  {row.memberOfficial===false&&<span style={{fontSize:9,fontFamily:"Noto Sans JP,sans-serif",color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"2px 5px",borderRadius:3}}>非公式</span>}
                 </div>
               </div>
               <div style={{textAlign:"right",flexShrink:0}}>
@@ -492,7 +493,7 @@ function App(){
       m.trials.filter(t=>t.event_no).forEach(t=>{
         const no=t.event_no;
         if(!map[no])map[no]={event_no:no,event_name:t.event_name||`第${no}回TT`,trials:[],date:t.date};
-        map[no].trials.push({...t,memberName:m.name,memberCategory:m.category||t.category,memberId:m.id});
+        map[no].trials.push({...t,memberName:m.name,memberCategory:m.category||t.category,memberId:m.id,memberOfficial:m.official!==false});
         if(t.date>map[no].date)map[no].date=t.date;
       });
     });
@@ -561,7 +562,7 @@ function App(){
   if(loading)return(
     <div style={{minHeight:"100dvh",display:"flex",alignItems:"center",justifyContent:"center",background:"#0d0d0d"}}>
       <div style={{textAlign:"center"}}>
-        <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:32,color:"#ff4d00",fontStyle:"italic",lineHeight:1.1}}>VAMOS RC</div><div style={{fontFamily:"Noto Sans JP,sans-serif",fontWeight:900,fontSize:32,color:"#fff",marginBottom:8}}>記録集計</div>
+        <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:32,color:"#ff4d00",fontStyle:"italic",lineHeight:1.1}}>VAMOS RC</div><div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:48,color:"#ffe066",fontStyle:"italic",marginBottom:8,letterSpacing:"-0.02em"}}>RESULT</div>
         <div style={{fontSize:11,color:"#444",fontFamily:"Noto Sans JP,sans-serif"}}>読み込み中...</div>
       </div>
     </div>
