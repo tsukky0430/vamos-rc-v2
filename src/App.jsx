@@ -558,6 +558,7 @@ export default function App(){
 
   return (
     <div className="app">
+      <style>{CSS}</style>
       {showPin&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setShowPin(false)}>
           <div className="mo">
