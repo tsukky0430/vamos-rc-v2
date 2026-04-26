@@ -237,33 +237,6 @@ function Modal({onClose,title,children}){
     </div>
   );
 }
-function OfficialToggle({value,onChange}){
-  return (
-    <FF label="記録の区分">
-      <div style={{display:"flex",gap:8}}>
-        {[{v:true,l:"公式",desc:"ランキングに反映"},{v:false,l:"非公式",desc:"TTのみ掲載"}].map(opt=>(
-          <button key={String(opt.v)} onClick={()=>onChange(opt.v)}
-            style={{flex:1,padding:"9px 8px",border:`1px solid ${value===opt.v?(opt.v?"#ff4d00":"#6366f1"):"#2e2e2e"}`,borderRadius:6,cursor:"pointer",background:value===opt.v?(opt.v?"rgba(255,77,0,.12)":"rgba(99,102,241,.12)"):"#141414",transition:"all .2s"}}>
-            <div style={{fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,fontSize:12,color:value===opt.v?(opt.v?"#ff4d00":"#818cf8"):"#555",marginBottom:2}}>{opt.l}</div>
-            <div style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:9,color:value===opt.v?"#666":"#444"}}>{opt.desc}</div>
-          </button>
-        ))}
-      </div>
-    </FF>
-  );
-}
-
-
-function Modal({onClose,title,children}){
-  return (
-    <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div className="mo">
-        <div style={{marginBottom:20}}><div style={{width:26,height:3,background:"#ff4d00",borderRadius:2,marginBottom:8}}/><div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:21,color:"#fff",fontStyle:"italic"}}>{title}</div></div>
-        <div style={{display:"flex",flexDirection:"column",gap:14}}>{children}</div>
-      </div>
-    </div>
-  );
-}
 function Empty({label}){return (<div style={{textAlign:"center",padding:"52px 20px",color:"#333"}}><div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:44,color:"#1a1a1a",marginBottom:10}}>—</div><div style={{fontSize:12,fontFamily:"Noto Sans JP,sans-serif"}}>{label}</div></div>);}
 function Toast(){const [v,setV]=useState(1);useEffect(()=>{const t=setTimeout(()=>setV(0),1600);return()=>clearTimeout(t);},[]);return (<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"#1e1e1e",border:"1px solid #2e2e2e",borderRadius:20,padding:"8px 18px",fontFamily:"Noto Sans JP,sans-serif",fontSize:13,fontWeight:600,color:"#aaa",zIndex:999,whiteSpace:"nowrap",opacity:v,transition:"opacity .4s"}}>✓ 保存しました</div>);}
 
