@@ -524,205 +524,7 @@ function App(){
   );
 
   return (
-    <div style={{minHeight:"100vh",background:"#0d0d0d",color:"#f0f0f0"}}>
-      <style>{CSS}</style>
-      {flash>0&&<Toast key={flash}/>}
-
-      {page==="member"&&am&&(
-        <MemberPage member={am} onBack={goBack}
-          onAddTrial={()=>{setTF({distance:"1000m",h:"",m:"",s:"",cs:"",date:today(),category:am.category,event_no:""});setShowAddT(true);}}
-          onDelTrial={(tid)=>requirePin(()=>delTrial(tid))}
-          onDelMember={()=>requirePin(()=>delMember(am.id))}
-          requirePin={requirePin}
-          catRankMap={catRankMap}
-          onEditTrial={(t)=>requirePin(()=>openEdit(t))}
-          editTrial={editTrial}
-          eForm={eForm} setEF={setEF}
-          onSaveTrial={()=>{requirePin(saveTrial);}}
-          onCancelEdit={()=>setEditTrial(null)}/>
-      )}
-
-      {page==="ranking"&&(
-        <div>
-          <header className="sh">
-            <div style={{maxWidth:760,margin:"0 auto",padding:"0 16px"}}>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",height:58}}>
-                <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:26,fontStyle:"italic",color:"#fff"}}>VAMOS<span style={{color:"#ff4d00"}}>RC</span></div>
-                <div style={{display:"flex",gap:7}}>
-                  
-                  <button className="ba rp-host" style={{fontSize:12,padding:"7px 14px"}} onClick={()=>requirePin(()=>setShowAddM(true))}>＋ 追加</button>
-                </div>
-              </div>
-            </div>
-            <div style={{maxWidth:760,margin:"0 auto",padding:"0 16px"}}>
-              <div className="tab-bar">
-                <button className={`ti ${mainTab==="events"?"on":""}`} onClick={()=>setMainTab("events")}>種目別</button>
-                <button className={`ti ${mainTab==="categories"?"on":""}`} onClick={()=>setMainTab("categories")}>カテゴリー別</button>
-                <button className={`ti ${mainTab==="tt"?"on":""}`} onClick={()=>setMainTab("tt")}>TT別</button>
-                <button className={`ti ${mainTab==="ranking"?"on":""}`} onClick={()=>setMainTab("ranking")}>VDOTランキング</button>
-              </div>
-            </div>
-          </header>
-
-          <main style={{maxWidth:760,margin:"0 auto",padding:"18px 14px"}}>
-            {mainTab==="events"&&(
-              <div className="pi">
-                <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:18}}>
-                  {DK.map(d=>(<button key={d} className={`dist-pill ${selDist===d?"sel":""}`} onClick={()=>setSelDist(d)}>{d}</button>))}
-                </div>
-                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16,paddingBottom:12,borderBottom:"1px solid #252525"}}>
-                  <div style={{width:3,height:32,background:"#ff4d00",borderRadius:2,flexShrink:0}}/>
-                  <div>
-                    <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:22,color:"#ff4d00",fontStyle:"italic"}}>{selDist}</div>
-                    <div style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{distRanking.length}名が記録あり · タイム順</div>
-                  </div>
-                </div>
-                {distRanking.length===0&&<Empty label="この種目の記録がありません"/>}
-                {distRanking.map((row,i)=>{ const cat=CMAP[row.category]; const c=vc(row.vdot); const cls=i===0?"gold":i===1?"silver":i===2?"bronze":""; return (
-                  <div key={row.memberId} className={`dr fu ${cls}`} style={{animationDelay:`${i*30}ms`}} onClick={()=>openM(row.memberId)}>
-                    <div style={{flexShrink:0,width:32,textAlign:"center"}}>
-                      {i<3?<span style={{fontSize:20}}>{["🥇","🥈","🥉"][i]}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{i+1}</span>}
-                    </div>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3}}>
-                        <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em"}}>{row.name}</span>
-                        {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
-                      </div>
-                      <div style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(row.date)}</div>
-                    </div>
-                    <div style={{textAlign:"right",flexShrink:0}}>
-                      <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:24,color:"#e0e0e0",lineHeight:1,fontStyle:"italic"}}>{fmtT(row.time)}</div>
-                      <div style={{fontSize:10,color:c,fontFamily:"Barlow Condensed,sans-serif",fontWeight:700,marginTop:2}}>VDOT {row.vdot.toFixed(1)}</div>
-                    </div>
-                    <span style={{color:"#333",fontSize:15,flexShrink:0}}>›</span>
-                  </div>
-                );})}
-              </div>
-            )}
-
-            {mainTab==="categories"&&(
-              <div className="pi">
-                <div className="card" style={{padding:"16px 18px",marginBottom:14}}><CatSel value={selCat} onChange={setSelCat}/></div>
-                <div className="tab-bar" style={{borderRadius:"8px 8px 0 0",background:"#141414",border:"1px solid #252525",borderBottom:"none",padding:"0 4px"}}>
-                  <button className={`ti ${catTab==="ranking"?"on":""}`} onClick={()=>setCatTab("ranking")}>ランキング</button>
-                  <button className={`ti ${catTab==="records"?"on":""}`} onClick={()=>setCatTab("records")}>カテゴリー記録</button>
-                </div>
-                <div className="card" style={{borderRadius:"0 0 8px 8px",padding:"14px"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,paddingBottom:12,borderBottom:"1px solid #252525"}}>
-                    <div style={{width:4,height:32,background:selCO.c,borderRadius:2,flexShrink:0}}/>
-                    <div>
-                      <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:20,color:selCO.c,fontStyle:"italic"}}>{selCO.l}</div>
-                      <div style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{catMs.length}名 · {Object.keys(catRecs).length}種目記録あり</div>
-                    </div>
-                  </div>
-                  {catTab==="ranking"&&(
-                    <div>
-                      {catMs.length===0&&<Empty label="このカテゴリーにメンバーがいません"/>}
-                      {catMs.map((m,i)=>(
-                        <div key={m.id} className={`cr fu ${i===0?"t1":""}`} style={{animationDelay:`${i*32}ms`}} onClick={()=>openM(m.id)}>
-                          <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:15,width:26,textAlign:"center",flexShrink:0,color:i===0?"#f59e0b":i===1?"#9ca3af":i===2?"#cd7c32":"#444"}}>{i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</div>
-                          <div style={{flex:1,minWidth:0}}>
-                            <div style={{fontWeight:700,fontSize:18,marginBottom:2,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em"}}>{m.name}</div>
-                            <div style={{fontSize:11,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{m.catBestTrial?.distance}&nbsp;<span style={{color:"#888"}}>{m.catBestTrial?fmtT(m.catBestTrial.time):""}</span></div>
-                          </div>
-                          <div style={{textAlign:"right",flexShrink:0}}>
-                            <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:26,color:vc(m.catVdot),fontStyle:"italic"}}>{m.catVdot.toFixed(1)}</div>
-                            <div style={{fontSize:9,color:"#444",fontFamily:"Noto Sans JP,sans-serif"}}>VDOT</div>
-                          </div>
-                          <span style={{color:"#333",fontSize:15,flexShrink:0}}>›</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {catTab==="records"&&(
-                    <div>
-                      {Object.keys(catRecs).length===0&&<Empty label="記録がありません"/>}
-                      {DK.filter(d=>catRecs[d]).map((dist,i)=>{ const rec=catRecs[dist],c=vc(rec.vdot); return (
-                        <div key={dist} className="rc fu" style={{animationDelay:`${i*32}ms`,marginBottom:8}}>
-                          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
-                            <div><div style={{fontSize:9,color:"#555",marginBottom:3,fontFamily:"Noto Sans JP,sans-serif"}}>{dist}</div><div style={{fontWeight:700,fontSize:16,fontFamily:"Noto Sans JP,sans-serif"}}>{rec.memberName}</div></div>
-                            <div style={{textAlign:"right"}}><div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:22,color:c,fontStyle:"italic"}}>{rec.vdot.toFixed(1)}</div><div style={{fontSize:9,color:"#444",fontFamily:"Noto Sans JP,sans-serif"}}>VDOT</div></div>
-                          </div>
-                          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                            <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:18,color:"#ddd",fontStyle:"italic"}}>{fmtT(rec.time)}</div>
-                            <div style={{fontSize:11,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(rec.date)}</div>
-                          </div>
-                        </div>
-                      );})}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {mainTab==="tt"&&(
-              <TTPage ttData={ttData} onOpenMember={openM}/>
-            )}
-
-            {mainTab==="ranking"&&(
-              <div style={{display:"flex",flexDirection:"column",gap:9}}>
-                {sorted.map((m,idx)=>(<MCard key={m.id} m={m} idx={idx} onClick={()=>openM(m.id)}/>))}
-                {!members.length&&<Empty label="メンバーがいません"/>}
-              </div>
-            )}
-          </main>
-        </div>
-      )}
-
-      {showAddM&&<Modal onClose={()=>setShowAddM(false)} title="メンバーを追加">
-        <FF label="名前"><input className="inp" placeholder="例：田中 健" value={mForm.name} onChange={e=>setMF(f=>({...f,name:e.target.value}))}/></FF>
-        <FF label="メンバー区分">
-          <div style={{display:"flex",gap:8}}>
-            {[{v:true,l:"公式メンバー",desc:"ランキングに掲載"},{v:false,l:"非公式メンバー",desc:"TTのみ掲載"}].map(opt=>(
-              <button key={String(opt.v)} onClick={()=>setMF(f=>({...f,official:opt.v}))}
-                style={{flex:1,padding:"10px 8px",border:`1px solid ${mForm.official===opt.v?(opt.v?"#ff4d00":"#6366f1"):"#2e2e2e"}`,borderRadius:6,cursor:"pointer",background:mForm.official===opt.v?(opt.v?"rgba(255,77,0,.12)":"rgba(99,102,241,.12)"):"#141414",transition:"all .2s"}}>
-                <div style={{fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,fontSize:12,color:mForm.official===opt.v?(opt.v?"#ff4d00":"#818cf8"):"#555",marginBottom:2}}>{opt.l}</div>
-                <div style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:9,color:mForm.official===opt.v?"#666":"#444"}}>{opt.desc}</div>
-              </button>
-            ))}
-          </div>
-        </FF>
-        <FF label="カテゴリー"><CatSel value={mForm.category} onChange={v=>setMF(f=>({...f,category:v}))}/></FF>
-        <FF label="種目"><select className="inp" value={mForm.distance} onChange={e=>setMF(f=>({...f,distance:e.target.value}))}>{DK.map(d=>(<option key={d}>{d}</option>))}</select></FF>
-        <FF label="タイム"><TI vals={mForm} onChange={(k,v)=>setMF(f=>({...f,[k]:v}))}/></FF>
-        <FF label="イベント・大会名（任意）">
-          <input className="inp" placeholder="例：春季記録会、東京マラソン" value={mForm.event_name_input||""} onChange={e=>setMF(f=>({...f,event_name_input:e.target.value,event_no:""}))}/>
-        </FF>
-        <FF label="タイムトライアルの場合は回数を入力">
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <span style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:13,color:"#aaa",whiteSpace:"nowrap"}}>第</span>
-            <input className="inp" type="number" min="1" placeholder="3" value={mForm.event_no||""} onChange={e=>setMF(f=>({...f,event_no:e.target.value,event_name_input:""}))} style={{width:90,textAlign:"center"}}/>
-            <span style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:13,color:"#aaa",whiteSpace:"nowrap"}}>回TT</span>
-            {mForm.event_no&&<span style={{fontSize:11,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",fontWeight:700}}>第{mForm.event_no}回TT</span>}
-          </div>
-        </FF>
-        <FF label="日付"><input className="inp" type="date" value={mForm.date} onChange={e=>setMF(f=>({...f,date:e.target.value}))}/></FF>
-        <VP distance={mForm.distance} h={mForm.h} m={mForm.m} s={mForm.s} cs={mForm.cs}/>
-        <div style={{display:"flex",gap:8}}><button className="bg" style={{flex:1}} onClick={()=>setShowAddM(false)}>キャンセル</button><button className="ba" style={{flex:2}} onClick={addMember}>追加する</button></div>
-      </Modal>}
-
-      {showAddT&&<Modal onClose={()=>setShowAddT(false)} title="タイムを記録">
-        <FF label="イベント・大会名（任意）">
-          <input className="inp" placeholder="例：春季記録会、東京マラソン" value={tForm.event_name_input||""} onChange={e=>setTF(f=>({...f,event_name_input:e.target.value,event_no:""}))}/>
-        </FF>
-        <FF label="タイムトライアルの場合は回数を入力">
-          <div style={{display:"flex",alignItems:"center",gap:8}}>
-            <span style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:13,color:"#aaa",whiteSpace:"nowrap"}}>第</span>
-            <input className="inp" type="number" min="1" placeholder="3" value={tForm.event_no||""} onChange={e=>setTF(f=>({...f,event_no:e.target.value,event_name_input:""}))} style={{width:90,textAlign:"center"}}/>
-            <span style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:13,color:"#aaa",whiteSpace:"nowrap"}}>回TT</span>
-            {tForm.event_no&&<span style={{fontSize:11,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",fontWeight:700}}>第{tForm.event_no}回TT</span>}
-          </div>
-        </FF>
-        <FF label="カテゴリー（変更可）"><CatSel value={tForm.category||am?.category||"m_elem4"} onChange={v=>setTF(f=>({...f,category:v}))}/></FF>
-        <FF label="種目"><select className="inp" value={tForm.distance} onChange={e=>setTF(f=>({...f,distance:e.target.value}))}>{DK.map(d=>(<option key={d}>{d}</option>))}</select></FF>
-        <FF label="タイム"><TI vals={tForm} onChange={(k,v)=>setTF(f=>({...f,[k]:v}))}/></FF>
-        <FF label="日付"><input className="inp" type="date" value={tForm.date} onChange={e=>setTF(f=>({...f,date:e.target.value}))}/></FF>
-        <VP distance={tForm.distance} h={tForm.h} m={tForm.m} s={tForm.s} cs={tForm.cs}/>
-        <OfficialToggle value={tForm.official!==false} onChange={v=>setTF(f=>({...f,official:v}))}/>
-        <div style={{display:"flex",gap:8}}><button className="bg" style={{flex:1}} onClick={()=>setShowAddT(false)}>キャンセル</button><button className="ba" style={{flex:2}} onClick={addTrial}>記録する</button></div>
-      </Modal>}
-
-
+    <div className="app">
       {showPin&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setShowPin(false)}>
           <div className="mo">
@@ -732,6 +534,162 @@ function App(){
             <button className="ba" style={{width:"100%"}} onClick={submitPin}>確認</button>
           </div>
         </div>
+      )}
+
+      {page==="ranking"&&(
+        <>
+          <header className="sh">
+            <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:24,color:"#ff4d00",fontStyle:"italic",letterSpacing:"-.02em"}}>VAMOS RC</div>
+            <button className="ba" style={{fontSize:13,padding:"8px 16px"}} onClick={()=>requirePin(()=>setShowAddM(true))}>＋ 追加</button>
+          </header>
+          <div className="tabs">
+            <button className={`ti ${mainTab==="vdot"?"on":""}`} onClick={()=>setMainTab("vdot")}>VDOTランキング</button>
+            <button className={`ti ${mainTab==="cat"?"on":""}`} onClick={()=>setMainTab("cat")}>カテゴリー別</button>
+            <button className={`ti ${mainTab==="dist"?"on":""}`} onClick={()=>setMainTab("dist")}>種目別</button>
+            <button className={`ti ${mainTab==="tt"?"on":""}`} onClick={()=>setMainTab("tt")}>TT別</button>
+          </div>
+          <main className="pi">
+            {mainTab==="vdot"&&(
+              sorted.length===0?<Empty label="まだメンバーがいません"/>:
+              sorted.map((m,i)=><MCard key={m.id} m={m} idx={i} onClick={()=>openM(m.id)}/>)
+            )}
+            {mainTab==="cat"&&(
+              <div>
+                <CatSel value={selCat} onChange={setSelCat}/>
+                <div style={{marginTop:16}}>
+                  {catMs.length===0?<Empty label="この種目の記録がありません"/>:
+                  catMs.map((row,i)=>(
+                    <div key={row.memberId} className={`dr fu ${i===0?"gold":i===1?"silver":i===2?"bronze":""}`} style={{animationDelay:`${i*30}ms`}} onClick={()=>openM(row.memberId)}>
+                      <div style={{flexShrink:0,width:32,textAlign:"center"}}>
+                        {i<3?<span style={{fontSize:20}}>{["🥇","🥈","🥉"][i]}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{i+1}</span>}
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3}}>
+                          <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em"}}>{row.name}</span>
+                        </div>
+                      </div>
+                      <div style={{textAlign:"right",flexShrink:0}}>
+                        <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:24,color:"#e0e0e0",lineHeight:1,fontStyle:"italic"}}>{fmtT(row.time)}</div>
+                        <div style={{fontSize:10,color:vc(row.vdot),fontFamily:"Barlow Condensed,sans-serif",fontWeight:700,marginTop:2}}>VDOT {row.vdot.toFixed(1)}</div>
+                      </div>
+                      <span style={{color:"#333",fontSize:15,flexShrink:0}}>›</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {mainTab==="dist"&&(
+              <div>
+                <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:16}}>
+                  {DK.map(d=>(<button key={d} className={`dist-pill ${selDist===d?"sel":""}`} onClick={()=>setSelDist(d)}>{d}</button>))}
+                </div>
+                {distRanking.length===0?<Empty label="この種目の記録がありません"/>:
+                distRanking.map((row,i)=>{
+                  const cat=CMAP[row.category];
+                  return (
+                    <div key={row.memberId} className={`dr fu ${i===0?"gold":i===1?"silver":i===2?"bronze":""}`} style={{animationDelay:`${i*30}ms`}} onClick={()=>openM(row.memberId)}>
+                      <div style={{flexShrink:0,width:32,textAlign:"center"}}>
+                        {i<3?<span style={{fontSize:20}}>{["🥇","🥈","🥉"][i]}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{i+1}</span>}
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3}}>
+                          <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em"}}>{row.name}</span>
+                          {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
+                        </div>
+                      </div>
+                      <div style={{textAlign:"right",flexShrink:0}}>
+                        <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:24,color:"#e0e0e0",lineHeight:1,fontStyle:"italic"}}>{fmtT(row.time)}</div>
+                        <div style={{fontSize:10,color:vc(row.vdot),fontFamily:"Barlow Condensed,sans-serif",fontWeight:700,marginTop:2}}>VDOT {row.vdot.toFixed(1)}</div>
+                      </div>
+                      <span style={{color:"#333",fontSize:15,flexShrink:0}}>›</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {mainTab==="tt"&&(<TTPage ttData={ttData} onOpenMember={openM}/>)}
+          </main>
+
+          {showAddM&&(
+            <Modal onClose={()=>setShowAddM(false)} title="メンバーを追加">
+              <FF label="メンバー区分">
+                <div style={{display:"flex",gap:8}}>
+                  {[{v:true,l:"公式メンバー",desc:"ランキングに掲載"},{v:false,l:"非公式メンバー",desc:"TTのみ掲載"}].map(opt=>(
+                    <button key={String(opt.v)} onClick={()=>setMF(f=>({...f,official:opt.v}))}
+                      style={{flex:1,padding:"10px 8px",border:`1px solid ${mForm.official===opt.v?(opt.v?"#ff4d00":"#6366f1"):"#2e2e2e"}`,borderRadius:6,cursor:"pointer",background:mForm.official===opt.v?(opt.v?"rgba(255,77,0,.12)":"rgba(99,102,241,.12)"):"#141414",transition:"all .2s"}}>
+                      <div style={{fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,fontSize:12,color:mForm.official===opt.v?(opt.v?"#ff4d00":"#818cf8"):"#555",marginBottom:2}}>{opt.l}</div>
+                      <div style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:9,color:mForm.official===opt.v?"#666":"#444"}}>{opt.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              </FF>
+              <FF label="名前"><input className="inp" placeholder="氏名" value={mForm.name} onChange={e=>setMF(f=>({...f,name:e.target.value}))}/></FF>
+              <FF label="カテゴリー"><CatSel value={mForm.category} onChange={v=>setMF(f=>({...f,category:v}))}/></FF>
+              <FF label="初回記録の種目"><select className="inp" value={mForm.distance} onChange={e=>setMF(f=>({...f,distance:e.target.value}))}>{DK.map(d=>(<option key={d}>{d}</option>))}</select></FF>
+              <FF label="イベント・大会名（任意）">
+                <input className="inp" placeholder="例：春季記録会" value={mForm.event_name_input||""} onChange={e=>setMF(f=>({...f,event_name_input:e.target.value,event_no:""}))}/>
+              </FF>
+              <FF label="タイムトライアルの場合は回数">
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:13,color:"#aaa",whiteSpace:"nowrap"}}>第</span>
+                  <input className="inp" type="number" min="1" placeholder="3" value={mForm.event_no||""} onChange={e=>setMF(f=>({...f,event_no:e.target.value,event_name_input:""}))} style={{width:90,textAlign:"center"}}/>
+                  <span style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:13,color:"#aaa",whiteSpace:"nowrap"}}>回TT</span>
+                  {mForm.event_no&&<span style={{fontSize:11,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",fontWeight:700}}>第{mForm.event_no}回TT</span>}
+                </div>
+              </FF>
+              <FF label="日付"><input className="inp" type="date" value={mForm.date} onChange={e=>setMF(f=>({...f,date:e.target.value}))}/></FF>
+              <FF label="タイム"><TI vals={mForm} onChange={(k,v)=>setMF(f=>({...f,[k]:v}))}/></FF>
+              <VP distance={mForm.distance} h={mForm.h} m={mForm.m} s={mForm.s} cs={mForm.cs}/>
+              <div style={{display:"flex",gap:8}}>
+                <button className="bg" style={{flex:1}} onClick={()=>setShowAddM(false)}>キャンセル</button>
+                <button className="ba" style={{flex:2}} onClick={addMember}>追加する</button>
+              </div>
+            </Modal>
+          )}
+        </>
+      )}
+
+      {page==="member"&&am&&(
+        <MemberPage
+          member={am}
+          onBack={goBack}
+          onAddTrial={()=>{setTF({distance:"1000m",h:"",m:"",s:"",cs:"",date:today(),category:am.category,event_no:"",event_name_input:"",official:true});setShowAddT(true);}}
+          onDelTrial={(tid)=>requirePin(()=>delTrial(tid))}
+          onDelMember={()=>requirePin(()=>delMember(am.id))}
+          requirePin={requirePin}
+          catRankMap={catRankMap}
+          onEditTrial={(t)=>requirePin(()=>openEdit(t))}
+          editTrial={editTrial}
+          eForm={eForm} setEF={setEF}
+          onSaveTrial={saveTrial}
+          onCancelEdit={()=>setEditTrial(null)}
+        />
+      )}
+
+      {showAddT&&(
+        <Modal onClose={()=>setShowAddT(false)} title="タイムを記録">
+          <FF label="イベント・大会名（任意）">
+            <input className="inp" placeholder="例：春季記録会、東京マラソン" value={tForm.event_name_input||""} onChange={e=>setTF(f=>({...f,event_name_input:e.target.value,event_no:""}))}/>
+          </FF>
+          <FF label="タイムトライアルの場合は回数">
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:13,color:"#aaa",whiteSpace:"nowrap"}}>第</span>
+              <input className="inp" type="number" min="1" placeholder="3" value={tForm.event_no||""} onChange={e=>setTF(f=>({...f,event_no:e.target.value,event_name_input:""}))} style={{width:90,textAlign:"center"}}/>
+              <span style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:13,color:"#aaa",whiteSpace:"nowrap"}}>回TT</span>
+              {tForm.event_no&&<span style={{fontSize:11,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",fontWeight:700}}>第{tForm.event_no}回TT</span>}
+            </div>
+          </FF>
+          <FF label="カテゴリー（変更可）"><CatSel value={tForm.category||am?.category||"m_elem4"} onChange={v=>setTF(f=>({...f,category:v}))}/></FF>
+          <FF label="種目"><select className="inp" value={tForm.distance} onChange={e=>setTF(f=>({...f,distance:e.target.value}))}>{DK.map(d=>(<option key={d}>{d}</option>))}</select></FF>
+          <FF label="タイム"><TI vals={tForm} onChange={(k,v)=>setTF(f=>({...f,[k]:v}))}/></FF>
+          <FF label="日付"><input className="inp" type="date" value={tForm.date} onChange={e=>setTF(f=>({...f,date:e.target.value}))}/></FF>
+          <VP distance={tForm.distance} h={tForm.h} m={tForm.m} s={tForm.s} cs={tForm.cs}/>
+          <OfficialToggle value={tForm.official!==false} onChange={v=>setTF(f=>({...f,official:v}))}/>
+          <div style={{display:"flex",gap:8}}>
+            <button className="bg" style={{flex:1}} onClick={()=>setShowAddT(false)}>キャンセル</button>
+            <button className="ba" style={{flex:2}} onClick={addTrial}>記録する</button>
+          </div>
+        </Modal>
       )}
     </div>
   );
