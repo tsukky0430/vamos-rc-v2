@@ -237,48 +237,33 @@ function Modal({onClose,title,children}){
     </div>
   );
 }
+function OfficialToggle({value,onChange}){
+  return (
+    <FF label="記録の区分">
+      <div style={{display:"flex",gap:8}}>
+        {[{v:true,l:"公式",desc:"ランキングに反映"},{v:false,l:"非公式",desc:"TTのみ掲載"}].map(opt=>(
+          <button key={String(opt.v)} onClick={()=>onChange(opt.v)}
+            style={{flex:1,padding:"9px 8px",border:`1px solid ${value===opt.v?(opt.v?"#ff4d00":"#6366f1"):"#2e2e2e"}`,borderRadius:6,cursor:"pointer",background:value===opt.v?(opt.v?"rgba(255,77,0,.12)":"rgba(99,102,241,.12)"):"#141414",transition:"all .2s"}}>
+            <div style={{fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,fontSize:12,color:value===opt.v?(opt.v?"#ff4d00":"#818cf8"):"#555",marginBottom:2}}>{opt.l}</div>
+            <div style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:9,color:value===opt.v?"#666":"#444"}}>{opt.desc}</div>
+          </button>
+        ))}
+      </div>
+    </FF>
+  );
+}
 
-function PinModal({onSuccess,onClose}){
-  const [input,setInput]=useState("");
-  const [err,setErr]=useState(false);
-  const [shake,setShake]=useState(false);
-  function hit(d){
-    if(input.length>=6)return;
-    const next=input+d; setInput(next); setErr(false);
-    if(next.length>=ADMIN_PIN.length){
-      setTimeout(()=>{ if(next===ADMIN_PIN){onSuccess();} else{setShake(true);setErr(true);setTimeout(()=>{setShake(false);setInput("");},600);} },80);
-    }
-  }
-  function del(){setInput(p=>p.slice(0,-1));setErr(false);}
-  const dots=Array.from({length:ADMIN_PIN.length},(_,i)=>input.length>i);
+
+function Modal({onClose,title,children}){
   return (
     <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div className="mo" style={{maxWidth:320,textAlign:"center",paddingBottom:32}}>
-        <div style={{marginBottom:24}}>
-          <div style={{width:26,height:3,background:"#ff4d00",borderRadius:2,margin:"0 auto 10px"}}/>
-          <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:22,color:"#fff",fontStyle:"italic"}}>管理者PIN</div>
-          <div style={{fontSize:12,color:"#555",fontFamily:"Noto Sans JP,sans-serif",marginTop:6}}>PINコードを入力してください</div>
-        </div>
-        <div style={{display:"flex",justifyContent:"center",gap:12,marginBottom:28,animation:shake?"shake .5s ease":"none"}}>
-          {dots.map((filled,i)=>(
-            <div key={i} style={{width:14,height:14,borderRadius:"50%",border:`2px solid ${err?"#ef4444":filled?"#ff4d00":"#333"}`,background:filled?(err?"#ef4444":"#ff4d00"):"transparent"}}/>
-          ))}
-        </div>
-        {err&&<div style={{fontSize:11,color:"#ef4444",fontFamily:"Noto Sans JP,sans-serif",marginBottom:16,marginTop:-16}}>PINが違います</div>}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,maxWidth:240,margin:"0 auto"}}>
-          {["1","2","3","4","5","6","7","8","9","","0","⌫"].map((k,i)=>(
-            <button key={i} onClick={()=>k==="⌫"?del():k!==""?hit(k):null}
-              style={{height:56,borderRadius:8,border:"1px solid #2e2e2e",background:k===""?"transparent":"#1a1a1a",color:k==="⌫"?"#888":"#f0f0f0",fontSize:k==="⌫"?20:22,fontFamily:"Barlow Condensed,sans-serif",fontWeight:700,cursor:k===""?"default":"pointer",opacity:k===""?0:1}}>
-              {k}
-            </button>
-          ))}
-        </div>
-        <button onClick={onClose} style={{marginTop:18,background:"#1a1a1a",border:"1px solid #333",borderRadius:8,color:"#999",fontFamily:"Noto Sans JP,sans-serif",fontSize:14,fontWeight:600,cursor:"pointer",padding:"12px 0",width:"100%"}}>キャンセル</button>
+      <div className="mo">
+        <div style={{marginBottom:20}}><div style={{width:26,height:3,background:"#ff4d00",borderRadius:2,marginBottom:8}}/><div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:21,color:"#fff",fontStyle:"italic"}}>{title}</div></div>
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>{children}</div>
       </div>
     </div>
   );
 }
-
 function Empty({label}){return (<div style={{textAlign:"center",padding:"52px 20px",color:"#333"}}><div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:44,color:"#1a1a1a",marginBottom:10}}>—</div><div style={{fontSize:12,fontFamily:"Noto Sans JP,sans-serif"}}>{label}</div></div>);}
 function Toast(){const [v,setV]=useState(1);useEffect(()=>{const t=setTimeout(()=>setV(0),1600);return()=>clearTimeout(t);},[]);return (<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"#1e1e1e",border:"1px solid #2e2e2e",borderRadius:20,padding:"8px 18px",fontFamily:"Noto Sans JP,sans-serif",fontSize:13,fontWeight:600,color:"#aaa",zIndex:999,whiteSpace:"nowrap",opacity:v,transition:"opacity .4s"}}>✓ 保存しました</div>);}
 
@@ -591,7 +576,7 @@ function App(){
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",height:58}}>
                 <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:26,fontStyle:"italic",color:"#fff"}}>VAMOS<span style={{color:"#ff4d00"}}>RC</span></div>
                 <div style={{display:"flex",gap:7}}>
-                  <button className="bg" style={{fontSize:11,padding:"6px 11px"}} onClick={()=>requirePin(()=>setShowReset(true))}>リセット</button>
+                  
                   <button className="ba rp-host" style={{fontSize:12,padding:"7px 14px"}} onClick={()=>requirePin(()=>setShowAddM(true))}>＋ 追加</button>
                 </div>
               </div>
@@ -764,12 +749,17 @@ function App(){
         <div style={{display:"flex",gap:8}}><button className="bg" style={{flex:1}} onClick={()=>setShowAddT(false)}>キャンセル</button><button className="ba" style={{flex:2}} onClick={addTrial}>記録する</button></div>
       </Modal>}
 
-      {showReset&&<Modal onClose={()=>setShowReset(false)} title="データをリセット">
-        <div style={{fontSize:13,color:"#777",lineHeight:1.7,marginBottom:16,fontFamily:"Noto Sans JP,sans-serif"}}>全データが削除されサンプルデータに戻ります。</div>
-        <div style={{display:"flex",gap:8}}><button className="bg" style={{flex:1}} onClick={()=>setShowReset(false)}>キャンセル</button><button style={{flex:1,background:"#ef4444",color:"#fff",border:"none",borderRadius:4,fontSize:13,fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,cursor:"pointer",padding:"9px"}} onClick={reset}>リセット</button></div>
-      </Modal>}
 
-      {showPin&&<PinModal onSuccess={()=>{setPinUnlocked(true);setShowPin(false);if(pinCb){pinCb();setPinCb(null);}}} onClose={()=>{setShowPin(false);setPinCb(null);}}/>}
+      {showPin&&(
+        <div className="ov" onClick={e=>e.target===e.currentTarget&&setShowPin(false)}>
+          <div className="mo">
+            <div style={{marginBottom:20,fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:22,color:"#fff",fontStyle:"italic"}}>PIN認証</div>
+            <input className="inp" type="password" placeholder="PINコードを入力" value={pinVal} onChange={e=>setPinVal(e.target.value)} onKeyDown={e=>e.key==="Enter"&&submitPin()} autoFocus style={{textAlign:"center",letterSpacing:8,fontSize:20,marginBottom:8}}/>
+            {pinErr&&<div style={{color:"#ef4444",fontSize:11,fontFamily:"Noto Sans JP,sans-serif",marginBottom:8,textAlign:"center"}}>PINコードが違います</div>}
+            <button className="ba" style={{width:"100%"}} onClick={submitPin}>確認</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
