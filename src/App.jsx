@@ -185,12 +185,11 @@ function CatSel({value,onChange}){
         return (
           <div key={row.label} style={{marginBottom:6}}>
             <div style={{fontSize:8,color:"#444",marginBottom:4,fontFamily:"Noto Sans JP,sans-serif"}}>{row.label}</div>
-            <div style={{display:"flex",gap:4,flexWrap:"nowrap",overflowX:"auto"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(6, 1fr)",gap:3}}>
               {row.groups.map((g,gi)=>[
-                gi>0&&<div key={'sep'+gi} style={{width:8,flexShrink:0}}/>,
                 ...CATS.filter(c=>c.g===g).map(c=>(
                   <button key={c.id} onClick={()=>onChange(c.id)}
-                    style={{padding:"5px 6px",border:`1px solid ${value===c.id?c.c:"#2e2e2e"}`,borderRadius:4,cursor:"pointer",fontFamily:"Noto Sans JP,sans-serif",fontSize:10,fontWeight:600,background:value===c.id?`${c.c}18`:"#1a1a1a",color:value===c.id?c.c:"#555",whiteSpace:"nowrap",flexShrink:0}}>
+                    style={{minWidth:0,padding:"5px 2px",border:`1px solid ${value===c.id?c.c:"#2e2e2e"}`,borderRadius:4,cursor:"pointer",fontFamily:"Noto Sans JP,sans-serif",fontSize:9,fontWeight:600,background:value===c.id?`${c.c}18`:"#1a1a1a",color:value===c.id?c.c:"#555",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
                     {c.s}
                   </button>
                 ))
@@ -367,11 +366,11 @@ function TTPage({ttData,onOpenMember,requirePin}){
               <div style={{flexShrink:0,width:32,textAlign:"center"}}>
                 {rd.isMedal?<span style={{fontSize:20}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{rd.medal}</span>}
               </div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3}}>
-                  <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em"}}>{row.memberName}</span>
-                  {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
-                  {row.memberOfficial===false&&<span style={{fontSize:9,fontFamily:"Noto Sans JP,sans-serif",color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"2px 5px",borderRadius:3}}>オープン参加</span>}
+              <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
+                <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"nowrap",minWidth:0}}>
+                  <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{row.memberName}</span>
+                  {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`,flexShrink:0}}>{cat.s}</span>}
+                  {row.memberOfficial===false&&<span style={{fontSize:9,fontFamily:"Noto Sans JP,sans-serif",color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"2px 5px",borderRadius:3,flexShrink:0}}>オープン参加</span>}
                 </div>
               </div>
               <div style={{textAlign:"right",flexShrink:0}}>
@@ -452,15 +451,15 @@ const CSS=`
 .ti:not(.on):hover{color:#888;}
 .bb{height:3px;background:#1e1e1e;border-radius:2px;overflow:hidden;margin-top:10px;}
 .bf{height:100%;border-radius:2px;transition:width 1s cubic-bezier(.25,1,.5,1);}
-.tr{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;background:#1a1a1a;border:1px solid #252525;margin-bottom:7px;transition:border-color .2s,transform .25s;}
+.tr{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:6px;background:#1a1a1a;border:1px solid #252525;margin-bottom:5px;transition:border-color .2s,transform .25s;}
 .tr:hover{border-color:#333;transform:translateX(4px);}
 .tr.pb{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.04);}
-.cr{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:8px;background:#1a1a1a;border:1px solid #252525;margin-bottom:7px;cursor:pointer;transition:border-color .2s,transform .25s;}
+.cr{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:6px;background:#1a1a1a;border:1px solid #252525;margin-bottom:5px;cursor:pointer;transition:border-color .2s,transform .25s;}
 .cr:hover{border-color:#333;transform:translateX(3px);}
 .cr.t1{border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.04);}
-.rc{background:#1a1a1a;border:1px solid #252525;border-radius:8px;padding:13px 15px;transition:border-color .2s,transform .2s;}
+.rc{background:#1a1a1a;border:1px solid #252525;border-radius:6px;padding:8px 12px;transition:border-color .2s,transform .2s;}
 .rc:hover{border-color:#333;transform:translateY(-2px);}
-.pc{background:#1a1a1a;border:1px solid #252525;border-radius:8px;padding:13px 15px;transition:border-color .2s,transform .2s;}
+.pc{background:#1a1a1a;border:1px solid #252525;border-radius:6px;padding:7px 12px;transition:border-color .2s,transform .2s;}
 .pc:hover{border-color:#333;transform:translateY(-2px);}
 .ba{background:#ff4d00;color:#fff;border:none;border-radius:4px;padding:9px 18px;font-size:13px;font-family:'Noto Sans JP',sans-serif;font-weight:700;cursor:pointer;transition:background .2s,transform .2s;}
 .ba:hover{background:#ff6b35;transform:translateY(-2px);}
@@ -479,7 +478,7 @@ const CSS=`
 .dist-pill{display:inline-flex;align-items:center;padding:7px 14px;border-radius:20px;border:1px solid #252525;background:#141414;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:600;color:#555;transition:all .2s;white-space:nowrap;}
 .dist-pill:hover{border-color:#444;color:#aaa;}
 .dist-pill.sel{background:rgba(255,77,0,.12);border-color:#ff4d00;color:#ff6b35;}
-.dr{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:8px;background:#1a1a1a;border:1px solid #252525;margin-bottom:7px;cursor:pointer;transition:border-color .2s,transform .25s;}
+.dr{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:6px;background:#1a1a1a;border:1px solid #252525;margin-bottom:5px;cursor:pointer;transition:border-color .2s,transform .25s;}
 .dr:hover{border-color:#333;transform:translateX(3px);}
 .dr.gold{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.05);}
 .dr.silver{border-color:rgba(192,192,192,.3);background:rgba(192,192,192,.03);}
@@ -694,6 +693,11 @@ function App(){
     await sb.from("members").delete().eq("id",id);
     goBack();setFlash(n=>n+1);
   }
+  async function renameMember(id,newName){
+    if(!newName||!newName.trim())return;
+    await sb.from("members").update({name:newName.trim()}).eq("id",id);
+    setFlash(n=>n+1);
+  }
   async function reset(){
     await sb.from("trials").delete().neq("id","00000000-0000-0000-0000-000000000000");
     await sb.from("members").delete().neq("id","00000000-0000-0000-0000-000000000000");
@@ -724,7 +728,8 @@ function App(){
           editTrial={editTrial}
           eForm={eForm} setEF={setEF}
           onSaveTrial={()=>{requirePin(saveTrial);}}
-          onCancelEdit={()=>setEditTrial(null)}/>
+          onCancelEdit={()=>setEditTrial(null)}
+          onRenameMember={(newName)=>requirePin(()=>renameMember(am.id,newName))}/>
       )}
 
       {page==="ranking"&&(
@@ -746,7 +751,7 @@ function App(){
             <div style={{maxWidth:760,margin:"0 auto",padding:"0 16px"}}>
               <div className="tab-bar">
                 <button className={`ti ${mainTab==="events"?"on":""}`} onClick={()=>setMainTab("events")}>種目別</button>
-                <button className={`ti ${mainTab==="categories"?"on":""}`} onClick={()=>setMainTab("categories")}>カテゴリー別</button>
+                <button className={`ti ${mainTab==="categories"?"on":""}`} onClick={()=>setMainTab("categories")}>年代別</button>
                 <button className={`ti ${mainTab==="tt"?"on":""}`} onClick={()=>setMainTab("tt")}>TT別</button>
                 <button className={`ti ${mainTab==="ranking"?"on":""}`} onClick={()=>setMainTab("ranking")}>VDOTランキング</button>
               </div>
@@ -772,10 +777,10 @@ function App(){
                     <div style={{flexShrink:0,width:32,textAlign:"center"}}>
                       {rd.isMedal?<span style={{fontSize:20}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{rd.medal}</span>}
                     </div>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3}}>
-                        <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em"}}>{row.name}</span>
-                        {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
+                    <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
+                      <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"nowrap",minWidth:0}}>
+                        <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{row.name}</span>
+                        {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`,flexShrink:0}}>{cat.s}</span>}
                       </div>
                       <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}><span style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(row.date)}</span>{row.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif"}}>{row.event_name}</span>}</div>
                     </div>
@@ -806,7 +811,7 @@ function App(){
                   </div>
                   {catTab==="ranking"&&(
                     <div>
-                      {Object.keys(catTopByDist).length===0&&<Empty label="このカテゴリーにメンバーがいません"/>}
+                      {Object.keys(catTopByDist).length===0&&<Empty label="この年代にメンバーがいません"/>}
                       {DK.filter(d=>catTopByDist[d]&&catTopByDist[d].length>0).map((dist,di)=>(
                         <div key={dist} style={{marginBottom:di===DK.filter(d=>catTopByDist[d]&&catTopByDist[d].length>0).length-1?0:18}}>
                           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,paddingBottom:6,borderBottom:`1px solid ${selCO.c}28`}}>
@@ -815,13 +820,13 @@ function App(){
                             <div style={{fontSize:9,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{catTopByDist[dist].length}名</div>
                           </div>
                           {catTopByDist[dist].map((row,i)=>{const rk=getRank(catTopByDist[dist],i,r=>r.time);const rd=rankDisplay(rk);return(
-                            <div key={row.memberId} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 10px",background:rk===1?"rgba(245,158,11,.05)":"#141414",border:`1px solid ${rk===1?"rgba(245,158,11,.2)":"#252525"}`,borderRadius:6,marginBottom:6,cursor:"pointer"}} onClick={()=>openM(row.memberId)}>
+                            <div key={row.memberId} style={{display:"flex",alignItems:"center",gap:10,padding:"6px 10px",background:rk===1?"rgba(245,158,11,.05)":"#141414",border:`1px solid ${rk===1?"rgba(245,158,11,.2)":"#252525"}`,borderRadius:6,marginBottom:4,cursor:"pointer"}} onClick={()=>openM(row.memberId)}>
                               <div style={{width:24,textAlign:"center",flexShrink:0,fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:14,color:rk===1?"#f59e0b":rk===2?"#9ca3af":rk===3?"#cd7c32":"#444"}}>{rd.medal}</div>
-                              <div style={{flex:1,minWidth:0}}>
-                                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,flexWrap:"wrap"}}>
-                                  <span style={{fontWeight:700,fontSize:14,fontFamily:"Noto Sans JP,sans-serif"}}>{row.memberName}</span>
-                                  {row.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif"}}>{row.event_name}</span>}
-                                  {row.memberOfficial===false&&<span style={{fontSize:8,color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"1px 4px",borderRadius:2,fontFamily:"Noto Sans JP,sans-serif"}}>オープン</span>}
+                              <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
+                                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,flexWrap:"nowrap",minWidth:0}}>
+                                  <span style={{fontWeight:700,fontSize:14,fontFamily:"Noto Sans JP,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{row.memberName}</span>
+                                  {row.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>{row.event_name}</span>}
+                                  {row.memberOfficial===false&&<span style={{fontSize:8,color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"1px 4px",borderRadius:2,fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>オープン</span>}
                                 </div>
                                 <div style={{fontSize:9,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(row.date)}</div>
                               </div>
@@ -837,12 +842,12 @@ function App(){
                   )}
                   {catTab==="vdot"&&(
                     <div>
-                      {(()=>{const officials=catMs.filter(m=>m.official!==false);return officials.length===0?<Empty label="このカテゴリーに公式メンバーがいません"/>:officials.map((m,i)=>{const c=vc(m.catVdot);const rk=getRank(officials,i,x=>-x.catVdot);const rd=rankDisplay(rk);return(
-                        <div key={m.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:rk===1?"rgba(245,158,11,.05)":"#141414",border:`1px solid ${rk===1?"rgba(245,158,11,.2)":"#252525"}`,borderRadius:6,marginBottom:8,cursor:"pointer"}} onClick={()=>openM(m.id)}>
+                      {(()=>{const officials=catMs.filter(m=>m.official!==false);return officials.length===0?<Empty label="この年代に公式メンバーがいません"/>:officials.map((m,i)=>{const c=vc(m.catVdot);const rk=getRank(officials,i,x=>-x.catVdot);const rd=rankDisplay(rk);return(
+                        <div key={m.id} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 12px",background:rk===1?"rgba(245,158,11,.05)":"#141414",border:`1px solid ${rk===1?"rgba(245,158,11,.2)":"#252525"}`,borderRadius:6,marginBottom:5,cursor:"pointer"}} onClick={()=>openM(m.id)}>
                           <div style={{width:28,textAlign:"center",flexShrink:0,fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:rk<=3?16:14,color:rk===1?"#f59e0b":rk===2?"#9ca3af":rk===3?"#cd7c32":"#444"}}>{rd.medal}</div>
-                          <div style={{flex:1,minWidth:0}}>
-                            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,flexWrap:"wrap"}}>
-                              <span style={{fontWeight:700,fontSize:15,fontFamily:"Noto Sans JP,sans-serif"}}>{m.name}</span>
+                          <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
+                            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,flexWrap:"nowrap",minWidth:0}}>
+                              <span style={{fontWeight:700,fontSize:15,fontFamily:"Noto Sans JP,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{m.name}</span>
                             </div>
                             <div style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{m.catBestTrial?.distance} · {m.catBestTrial?fmtT(m.catBestTrial.time):""}{m.catBestTrial?.event_name&&<span style={{color:"#ff4d00",marginLeft:6}}>{m.catBestTrial.event_name}</span>}</div>
                           </div>
@@ -885,7 +890,7 @@ function App(){
             ))}
           </div>
         </FF>
-        <FF label="カテゴリー"><CatSel value={mForm.category} onChange={v=>setMF(f=>({...f,category:v}))}/></FF>
+        <FF label="年代"><CatSel value={mForm.category} onChange={v=>setMF(f=>({...f,category:v}))}/></FF>
         <FF label="種目"><select className="inp" value={mForm.distance} onChange={e=>setMF(f=>({...f,distance:e.target.value}))}>{DK.map(d=>(<option key={d}>{d}</option>))}</select></FF>
         <FF label="タイム"><TI vals={mForm} onChange={(k,v)=>setMF(f=>({...f,[k]:v}))}/></FF>
         <FF label="イベント・大会名（任意）">
@@ -916,7 +921,7 @@ function App(){
             {tForm.event_no&&<span style={{fontSize:11,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",fontWeight:700}}>第{tForm.event_no}回TT</span>}
           </div>
         </FF>
-        <FF label="カテゴリー（変更可）"><CatSel value={tForm.category||am?.category||"m_elem4"} onChange={v=>setTF(f=>({...f,category:v}))}/></FF>
+        <FF label="年代（変更可）"><CatSel value={tForm.category||am?.category||"m_elem4"} onChange={v=>setTF(f=>({...f,category:v}))}/></FF>
         <FF label="種目"><select className="inp" value={tForm.distance} onChange={e=>setTF(f=>({...f,distance:e.target.value}))}>{DK.map(d=>(<option key={d}>{d}</option>))}</select></FF>
         <FF label="タイム"><TI vals={tForm} onChange={(k,v)=>setTF(f=>({...f,[k]:v}))}/></FF>
         <FF label="日付"><input className="inp" type="date" value={tForm.date} onChange={e=>setTF(f=>({...f,date:e.target.value}))}/></FF>
@@ -932,7 +937,7 @@ function App(){
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff4d00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
               <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:22,color:"#fff",fontStyle:"italic"}}>SEARCH</div>
             </div>
-            <input className="inp" placeholder="名前、種目、イベント名、カテゴリーで検索…" value={searchQ} onChange={e=>setSearchQ(e.target.value)} autoFocus style={{marginBottom:14,fontSize:14}}/>
+            <input className="inp" placeholder="名前、種目、イベント名、年代で検索…" value={searchQ} onChange={e=>setSearchQ(e.target.value)} autoFocus style={{marginBottom:14,fontSize:14}}/>
             {searchResults&&(
               <div>
                 {searchResults.members.length===0&&searchResults.trials.length===0&&(
@@ -962,11 +967,11 @@ function App(){
                     {searchResults.trials.slice(0,30).map(t=>{const cat=CMAP[t.category];return(
                       <div key={t.id} onClick={()=>openM(t.memberId)} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:"#141414",border:"1px solid #252525",borderRadius:6,cursor:"pointer",marginBottom:6}}>
                         <div style={{flex:1,minWidth:0}}>
-                          <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"wrap"}}>
-                            <span style={{fontWeight:700,fontSize:13,fontFamily:"Noto Sans JP,sans-serif"}}>{t.memberName}</span>
-                            <span style={{fontSize:10,color:"#888",fontFamily:"Noto Sans JP,sans-serif"}}>{t.distance}</span>
-                            {t.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif"}}>{t.event_name}</span>}
-                            {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
+                          <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"nowrap",minWidth:0}}>
+                            <span style={{fontWeight:700,fontSize:13,fontFamily:"Noto Sans JP,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,flexShrink:1}}>{t.memberName}</span>
+                            <span style={{fontSize:10,color:"#888",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>{t.distance}</span>
+                            {t.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{t.event_name}</span>}
+                            {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`,flexShrink:0}}>{cat.s}</span>}
                           </div>
                           <div style={{fontSize:9,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtT(t.time)} · VDOT {t.vdot.toFixed(1)} · {fmtD(t.date)}</div>
                         </div>
@@ -993,8 +998,10 @@ function App(){
   );
 }
 
-function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,catRankMap,onEditTrial,editTrial,eForm,setEF,onSaveTrial,onCancelEdit}){
+function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,catRankMap,onEditTrial,editTrial,eForm,setEF,onSaveTrial,onCancelEdit,onRenameMember}){
   const [tab,setTab]=useState("history");
+  const [showRenameModal,setShowRenameModal]=useState(false);
+  const [renameInput,setRenameInput]=useState(member.name);
   const [goals,setGoals]=useState([]);
   const [showAddGoal,setShowAddGoal]=useState(false);
   const [editGoalIdx,setEditGoalIdx]=useState(-1);
@@ -1021,23 +1028,34 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
     <div>
       <header className="sh">
         <div style={{maxWidth:760,margin:"0 auto",padding:"0 16px"}}>
-          <div style={{display:"flex",alignItems:"center",gap:12,height:58}}>
-            <button onClick={onBack} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:26,lineHeight:1,padding:"0 4px"}} onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="#666"}>‹</button>
+          <div style={{display:"flex",alignItems:"center",gap:8,paddingTop:12,paddingBottom:14}}>
+            <button onClick={onBack} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:30,lineHeight:1,padding:"0 4px",flexShrink:0}} onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="#666"}>‹</button>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2}}>
-                <span style={{fontWeight:700,fontSize:20,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em"}}>{member.name}</span>
-                {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
-                {member.currentOfficial===false&&<span style={{fontSize:9,fontFamily:"Noto Sans JP,sans-serif",color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"2px 5px",borderRadius:3}}>オープン参加</span>}
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"nowrap",minWidth:0}}>
+                <span onContextMenu={e=>{e.preventDefault();setRenameInput(member.name);setShowRenameModal(true);}} onTouchStart={e=>{const timer=setTimeout(()=>{setRenameInput(member.name);setShowRenameModal(true);},600);e.currentTarget._lp=timer;}} onTouchEnd={e=>clearTimeout(e.currentTarget._lp)} onTouchMove={e=>clearTimeout(e.currentTarget._lp)} style={{fontWeight:700,fontSize:30,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,color:"#fff",cursor:"pointer",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}} title="長押しで名前を編集">{member.name}</span>
+                {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`,flexShrink:0,fontSize:11,padding:"2px 7px"}}>{cat.s}</span>}
+                {member.currentOfficial===false&&<span style={{fontSize:9,fontFamily:"Noto Sans JP,sans-serif",color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"2px 5px",borderRadius:3,flexShrink:0}}>オープン参加</span>}
               </div>
-              <div style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{member.currentOfficial===false?"オープン参加メンバー":member.rank?`#${member.rank}位 · ${rank}`:rank}</div>
-            </div>
-            <div style={{textAlign:"right",flexShrink:0,marginRight:14}}>
-              <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:24,color:"#aaa",lineHeight:1,fontStyle:"italic"}}>{member.trials.length}</div>
-              <div style={{fontSize:9,color:"#444",fontFamily:"Noto Sans JP,sans-serif",marginTop:2}}>記録</div>
-            </div>
-            <div style={{textAlign:"right",flexShrink:0}}>
-              <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:32,color,lineHeight:1,fontStyle:"italic"}}><AnimatedNum v={member.vdot}/></div>
-              <div style={{fontSize:9,color:"#444",fontFamily:"Noto Sans JP,sans-serif"}}>VDOT</div>
+              <div style={{display:"flex",alignItems:"baseline",gap:14}}>
+                <div style={{display:"flex",alignItems:"baseline",gap:5}}>
+                  <span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:34,color,lineHeight:1,fontStyle:"italic"}}><AnimatedNum v={member.vdot}/></span>
+                  <span style={{fontSize:10,color:"#666",fontFamily:"Noto Sans JP,sans-serif"}}>VDOT</span>
+                </div>
+                <div style={{height:18,width:1,background:"#2a2a2a"}}/>
+                <div style={{display:"flex",alignItems:"baseline",gap:5}}>
+                  <span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:22,color:"#aaa",lineHeight:1,fontStyle:"italic"}}>{member.trials.length}</span>
+                  <span style={{fontSize:10,color:"#666",fontFamily:"Noto Sans JP,sans-serif"}}>記録</span>
+                </div>
+                {member.currentOfficial!==false&&member.rank&&(
+                  <>
+                    <div style={{height:18,width:1,background:"#2a2a2a"}}/>
+                    <div style={{display:"flex",alignItems:"baseline",gap:5}}>
+                      <span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:22,color:"#aaa",lineHeight:1,fontStyle:"italic"}}>#{member.rank}</span>
+                      <span style={{fontSize:10,color:"#666",fontFamily:"Noto Sans JP,sans-serif"}}>位</span>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
           <div className="tab-bar">
@@ -1106,6 +1124,23 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
             );})}
             {!member.trials.length&&<Empty label="まだ記録がありません"/>}
             <div style={{display:"flex",justifyContent:"flex-end",marginTop:28}}><button className="bd" onClick={onDelMember}>メンバーを削除</button></div>
+            {showRenameModal&&(
+              <div className="ov" onClick={e=>e.target===e.currentTarget&&setShowRenameModal(false)}>
+                <div className="mo">
+                  <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:18,color:"#fff",fontStyle:"italic",marginBottom:14}}>名前を編集</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:14}}>
+                    <div>
+                      <div style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:11,color:"#888",marginBottom:6}}>新しい名前</div>
+                      <input className="inp" placeholder="例: 田中 健" value={renameInput} onChange={e=>setRenameInput(e.target.value)} autoFocus/>
+                    </div>
+                    <div style={{display:"flex",gap:8}}>
+                      <button className="bg" style={{flex:1}} onClick={()=>setShowRenameModal(false)}>キャンセル</button>
+                      <button className="ba" style={{flex:2}} onClick={()=>{if(renameInput.trim()){onRenameMember(renameInput.trim());setShowRenameModal(false);}}}>更新する</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             {editTrial&&(
               <div className="ov" onClick={e=>e.target===e.currentTarget&&onCancelEdit()}>
                 <div className="mo">
@@ -1122,7 +1157,7 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
                         {eForm.event_no&&<span style={{fontSize:11,color:"#6366f1",fontFamily:"Noto Sans JP,sans-serif",fontWeight:700}}>第{eForm.event_no}回TT</span>}
                       </div>
                     </FF>
-                    <FF label="カテゴリー"><CatSel value={eForm.category||member.category} onChange={v=>setEF(f=>({...f,category:v}))}/></FF>
+                    <FF label="年代"><CatSel value={eForm.category||member.category} onChange={v=>setEF(f=>({...f,category:v}))}/></FF>
                     <FF label="種目"><select className="inp" value={eForm.distance} onChange={e=>setEF(f=>({...f,distance:e.target.value}))}>{DK.map(d=>(<option key={d}>{d}</option>))}</select></FF>
                     <FF label="タイム"><TI vals={eForm} onChange={(k,v)=>setEF(f=>({...f,[k]:v}))}/></FF>
                     <FF label="日付"><input className="inp" type="date" value={eForm.date} onChange={e=>setEF(f=>({...f,date:e.target.value}))}/></FF>
@@ -1140,23 +1175,23 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
         )}
         {tab==="paces"&&(
           <div className="pi">
-            <div className="card" style={{padding:"20px",marginBottom:12,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <div>
-                <div style={{fontSize:9,color:"#555",marginBottom:5,fontFamily:"Noto Sans JP,sans-serif"}}>現在のVDOT</div>
-                <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:50,color,lineHeight:1,fontStyle:"italic"}}><AnimatedNum v={member.vdot}/></div>
+            <div className="card" style={{padding:"10px 14px",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div style={{display:"flex",alignItems:"baseline",gap:8}}>
+                <div style={{fontSize:9,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>現在のVDOT</div>
+                <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:30,color,lineHeight:1,fontStyle:"italic"}}><AnimatedNum v={member.vdot}/></div>
               </div>
-              <div style={{background:`${color}12`,border:`1px solid ${color}30`,borderRadius:4,padding:"9px 16px"}}>
-                <div style={{fontSize:13,color,fontWeight:700,fontFamily:"Noto Sans JP,sans-serif"}}>{rank}</div>
+              <div style={{background:`${color}12`,border:`1px solid ${color}30`,borderRadius:4,padding:"4px 10px"}}>
+                <div style={{fontSize:11,color,fontWeight:700,fontFamily:"Noto Sans JP,sans-serif"}}>{rank}</div>
               </div>
             </div>
-            <div style={{display:"flex",flexDirection:"column",gap:9}}>
+            <div style={{display:"flex",flexDirection:"column",gap:5}}>
               {paceItems.map((p,i)=>(
-                <div key={p.l} className="pc fu" style={{animationDelay:`${i*38}ms`,display:"flex",alignItems:"flex-start",gap:14,padding:"14px 16px"}}>
-                  <div style={{flexShrink:0,minWidth:90}}>
-                    <div style={{fontSize:14,color:"#fbbf24",marginBottom:6,fontFamily:"Noto Sans JP,sans-serif",fontWeight:400}}>{p.l}</div>
-                    <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:22,color:p.c,fontStyle:"italic",lineHeight:1.1}}>{p.v}<span style={{fontSize:11,color:"#444",fontStyle:"normal"}}>/km</span></div>
+                <div key={p.l} className="pc fu" style={{animationDelay:`${i*38}ms`,display:"flex",alignItems:"center",gap:10,padding:"7px 12px"}}>
+                  <div style={{flexShrink:0,minWidth:130,display:"flex",flexDirection:"column",justifyContent:"center"}}>
+                    <div style={{fontSize:12,color:"#fbbf24",marginBottom:1,fontFamily:"Noto Sans JP,sans-serif",fontWeight:400}}>{p.l}</div>
+                    <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:18,color:p.c,fontStyle:"italic",lineHeight:1}}>{p.v}<span style={{fontSize:10,color:"#444",fontStyle:"normal"}}>/km</span></div>
                   </div>
-                  <div style={{flex:1,fontSize:11,color:"#888",fontFamily:"Noto Sans JP,sans-serif",lineHeight:1.6,paddingTop:2,borderLeft:`1px solid ${p.c}28`,paddingLeft:14}}>{p.d}</div>
+                  <div style={{flex:1,fontSize:10,color:"#888",fontFamily:"Noto Sans JP,sans-serif",lineHeight:1.5,borderLeft:`1px solid ${p.c}28`,paddingLeft:10}}>{p.d}</div>
                 </div>
               ))}
             </div>
@@ -1318,11 +1353,11 @@ function MCard({m,idx,onClick,allMembers}){
       <div style={{flexShrink:0,width:32,textAlign:"center"}}>
         {rd.isMedal?<span style={{fontSize:20}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{rd.medal}</span>}
       </div>
-      <div style={{flex:1,minWidth:0}}>
-        <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"wrap"}}>
-          <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em"}}>{m.name}</span>
-          {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
-          {m.currentOfficial===false&&<span style={{fontSize:9,fontFamily:"Noto Sans JP,sans-serif",color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"2px 5px",borderRadius:3}}>オープン参加</span>}
+      <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"nowrap",minWidth:0}}>
+          <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{m.name}</span>
+          {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`,flexShrink:0}}>{cat.s}</span>}
+          {m.currentOfficial===false&&<span style={{fontSize:9,fontFamily:"Noto Sans JP,sans-serif",color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"2px 5px",borderRadius:3,flexShrink:0}}>オープン参加</span>}
         </div>
         {m.bestTrial&&(
           <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
