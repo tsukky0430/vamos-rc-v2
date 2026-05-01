@@ -366,12 +366,10 @@ function TTPage({ttData,onOpenMember,requirePin}){
               <div style={{flexShrink:0,width:32,textAlign:"center"}}>
                 {rd.isMedal?<span style={{fontSize:20}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{rd.medal}</span>}
               </div>
-              <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
-                <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"nowrap",minWidth:0}}>
-                  <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{row.memberName}</span>
-                  {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`,flexShrink:0}}>{cat.s}</span>}
-                  {row.memberOfficial===false&&<span style={{fontSize:9,fontFamily:"Noto Sans JP,sans-serif",color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"2px 5px",borderRadius:3,flexShrink:0}}>オープン参加</span>}
-                </div>
+              <div style={{flex:1,minWidth:0,display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontWeight:700,fontSize:17,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",whiteSpace:"nowrap",flex:"1 1 auto"}}>{row.memberName}</span>
+                {cat&&<span className="vbadge" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
+                {row.memberOfficial===false&&<span className="vbadge" style={{color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)"}}>オープン</span>}
               </div>
               <div style={{textAlign:"right",flexShrink:0}}>
                 <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:24,color:"#e0e0e0",lineHeight:1,fontStyle:"italic"}}>{fmtT(row.time)}</div>
@@ -429,6 +427,7 @@ const CSS=`
 @media(min-width:640px){.tt-grid{grid-template-columns:repeat(10,1fr);}}
 
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;0,900;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+.vbadge{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;writing-mode:vertical-rl;font-family:'Noto Sans JP',sans-serif;font-size:9px;font-weight:600;padding:3px 2px;border-radius:3px;line-height:1.1;letter-spacing:0;flex-shrink:0;text-orientation:upright;}
 *{box-sizing:border-box;margin:0;padding:0;}body{background:#0d0d0d;}
 .vn{font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1;font-style:italic;}
 .card{background:#141414;border:1px solid #252525;border-radius:8px;position:relative;overflow:hidden;}
@@ -777,10 +776,10 @@ function App(){
                     <div style={{flexShrink:0,width:32,textAlign:"center"}}>
                       {rd.isMedal?<span style={{fontSize:20}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{rd.medal}</span>}
                     </div>
-                    <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
-                      <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"nowrap",minWidth:0}}>
-                        <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{row.name}</span>
-                        {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`,flexShrink:0}}>{cat.s}</span>}
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"nowrap"}}>
+                        <span style={{fontWeight:700,fontSize:17,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",whiteSpace:"nowrap",flex:"1 1 auto"}}>{row.name}</span>
+                        {cat&&<span className="vbadge" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
                       </div>
                       <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}><span style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(row.date)}</span>{row.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif"}}>{row.event_name}</span>}</div>
                     </div>
@@ -822,11 +821,11 @@ function App(){
                           {catTopByDist[dist].map((row,i)=>{const rk=getRank(catTopByDist[dist],i,r=>r.time);const rd=rankDisplay(rk);return(
                             <div key={row.memberId} style={{display:"flex",alignItems:"center",gap:10,padding:"6px 10px",background:rk===1?"rgba(245,158,11,.05)":"#141414",border:`1px solid ${rk===1?"rgba(245,158,11,.2)":"#252525"}`,borderRadius:6,marginBottom:4,cursor:"pointer"}} onClick={()=>openM(row.memberId)}>
                               <div style={{width:24,textAlign:"center",flexShrink:0,fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:14,color:rk===1?"#f59e0b":rk===2?"#9ca3af":rk===3?"#cd7c32":"#444"}}>{rd.medal}</div>
-                              <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
-                                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,flexWrap:"nowrap",minWidth:0}}>
-                                  <span style={{fontWeight:700,fontSize:14,fontFamily:"Noto Sans JP,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{row.memberName}</span>
+                              <div style={{flex:1,minWidth:0}}>
+                                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,flexWrap:"nowrap"}}>
+                                  <span style={{fontWeight:700,fontSize:14,fontFamily:"Noto Sans JP,sans-serif",whiteSpace:"nowrap",flex:"1 1 auto"}}>{row.memberName}</span>
                                   {row.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>{row.event_name}</span>}
-                                  {row.memberOfficial===false&&<span style={{fontSize:8,color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"1px 4px",borderRadius:2,fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>オープン</span>}
+                                  {row.memberOfficial===false&&<span className="vbadge" style={{color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)"}}>オープン</span>}
                                 </div>
                                 <div style={{fontSize:9,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(row.date)}</div>
                               </div>
@@ -845,9 +844,9 @@ function App(){
                       {(()=>{const officials=catMs.filter(m=>m.official!==false);return officials.length===0?<Empty label="この年代に公式メンバーがいません"/>:officials.map((m,i)=>{const c=vc(m.catVdot);const rk=getRank(officials,i,x=>-x.catVdot);const rd=rankDisplay(rk);return(
                         <div key={m.id} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 12px",background:rk===1?"rgba(245,158,11,.05)":"#141414",border:`1px solid ${rk===1?"rgba(245,158,11,.2)":"#252525"}`,borderRadius:6,marginBottom:5,cursor:"pointer"}} onClick={()=>openM(m.id)}>
                           <div style={{width:28,textAlign:"center",flexShrink:0,fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:rk<=3?16:14,color:rk===1?"#f59e0b":rk===2?"#9ca3af":rk===3?"#cd7c32":"#444"}}>{rd.medal}</div>
-                          <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
-                            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,flexWrap:"nowrap",minWidth:0}}>
-                              <span style={{fontWeight:700,fontSize:15,fontFamily:"Noto Sans JP,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{m.name}</span>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,flexWrap:"nowrap"}}>
+                              <span style={{fontWeight:700,fontSize:15,fontFamily:"Noto Sans JP,sans-serif",whiteSpace:"nowrap",flex:"1 1 auto"}}>{m.name}</span>
                             </div>
                             <div style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{m.catBestTrial?.distance} · {m.catBestTrial?fmtT(m.catBestTrial.time):""}{m.catBestTrial?.event_name&&<span style={{color:"#ff4d00",marginLeft:6}}>{m.catBestTrial.event_name}</span>}</div>
                           </div>
@@ -868,7 +867,7 @@ function App(){
             )}
 
             {mainTab==="ranking"&&(
-              <div style={{display:"flex",flexDirection:"column",gap:9}}>
+              <div>
                 {sorted.map((m,idx)=>(<MCard key={m.id} m={m} idx={idx} allMembers={sorted} onClick={()=>openM(m.id)}/>))}
                 {!members.length&&<Empty label="メンバーがいません"/>}
               </div>
@@ -1028,11 +1027,11 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
     <div>
       <header className="sh">
         <div style={{maxWidth:760,margin:"0 auto",padding:"0 16px"}}>
-          <div style={{display:"flex",alignItems:"center",gap:8,paddingTop:12,paddingBottom:14}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,paddingTop:16,paddingBottom:18}}>
             <button onClick={onBack} style={{background:"none",border:"none",color:"#666",cursor:"pointer",fontSize:30,lineHeight:1,padding:"0 4px",flexShrink:0}} onMouseEnter={e=>e.currentTarget.style.color="#fff"} onMouseLeave={e=>e.currentTarget.style.color="#666"}>‹</button>
             <div style={{flex:1,minWidth:0}}>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"nowrap",minWidth:0}}>
-                <span onContextMenu={e=>{e.preventDefault();setRenameInput(member.name);setShowRenameModal(true);}} onTouchStart={e=>{const timer=setTimeout(()=>{setRenameInput(member.name);setShowRenameModal(true);},600);e.currentTarget._lp=timer;}} onTouchEnd={e=>clearTimeout(e.currentTarget._lp)} onTouchMove={e=>clearTimeout(e.currentTarget._lp)} style={{fontWeight:700,fontSize:30,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,color:"#fff",cursor:"pointer",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}} title="長押しで名前を編集">{member.name}</span>
+                <span onContextMenu={e=>{e.preventDefault();setRenameInput(member.name);setShowRenameModal(true);}} onTouchStart={e=>{const timer=setTimeout(()=>{setRenameInput(member.name);setShowRenameModal(true);},600);e.currentTarget._lp=timer;}} onTouchEnd={e=>clearTimeout(e.currentTarget._lp)} onTouchMove={e=>clearTimeout(e.currentTarget._lp)} style={{fontWeight:700,fontSize:30,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,color:"#fff",cursor:"pointer",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none",lineHeight:1.3,padding:"4px 0",display:"inline-block"}} title="長押しで名前を編集">{member.name}</span>
                 {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`,flexShrink:0,fontSize:11,padding:"2px 7px"}}>{cat.s}</span>}
                 {member.currentOfficial===false&&<span style={{fontSize:9,fontFamily:"Noto Sans JP,sans-serif",color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"2px 5px",borderRadius:3,flexShrink:0}}>オープン参加</span>}
               </div>
@@ -1186,12 +1185,12 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:5}}>
               {paceItems.map((p,i)=>(
-                <div key={p.l} className="pc fu" style={{animationDelay:`${i*38}ms`,display:"flex",alignItems:"center",gap:10,padding:"7px 12px"}}>
+                <div key={p.l} className="pc fu" style={{animationDelay:`${i*38}ms`,display:"flex",alignItems:"center",gap:10,padding:"7px 12px",height:74}}>
                   <div style={{flexShrink:0,minWidth:130,display:"flex",flexDirection:"column",justifyContent:"center"}}>
                     <div style={{fontSize:12,color:"#fbbf24",marginBottom:1,fontFamily:"Noto Sans JP,sans-serif",fontWeight:400}}>{p.l}</div>
                     <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:18,color:p.c,fontStyle:"italic",lineHeight:1}}>{p.v}<span style={{fontSize:10,color:"#444",fontStyle:"normal"}}>/km</span></div>
                   </div>
-                  <div style={{flex:1,fontSize:10,color:"#888",fontFamily:"Noto Sans JP,sans-serif",lineHeight:1.5,borderLeft:`1px solid ${p.c}28`,paddingLeft:10}}>{p.d}</div>
+                  <div style={{flex:1,fontSize:10,color:"#888",fontFamily:"Noto Sans JP,sans-serif",lineHeight:1.5,borderLeft:`1px solid ${p.c}28`,paddingLeft:10,alignSelf:"stretch",display:"flex",alignItems:"center",overflow:"hidden"}}>{p.d}</div>
                 </div>
               ))}
             </div>
@@ -1353,11 +1352,11 @@ function MCard({m,idx,onClick,allMembers}){
       <div style={{flexShrink:0,width:32,textAlign:"center"}}>
         {rd.isMedal?<span style={{fontSize:20}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{rd.medal}</span>}
       </div>
-      <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
-        <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:3,flexWrap:"nowrap",minWidth:0}}>
-          <span style={{fontWeight:700,fontSize:18,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{m.name}</span>
-          {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`,flexShrink:0}}>{cat.s}</span>}
-          {m.currentOfficial===false&&<span style={{fontSize:9,fontFamily:"Noto Sans JP,sans-serif",color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"2px 5px",borderRadius:3,flexShrink:0}}>オープン参加</span>}
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"nowrap"}}>
+          <span style={{fontWeight:700,fontSize:17,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",whiteSpace:"nowrap",flex:"1 1 auto"}}>{m.name}</span>
+          {cat&&<span className="vbadge" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
+          {m.currentOfficial===false&&<span className="vbadge" style={{color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)"}}>オープン</span>}
         </div>
         {m.bestTrial&&(
           <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
