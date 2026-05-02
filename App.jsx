@@ -493,6 +493,8 @@ function App(){
   const [activeId,setActiveId]=useState(null);
   const [mainTab,setMainTab]=useState("events");
   const [showSearch,setShowSearch]=useState(false);
+  const [showVisits,setShowVisits]=useState(false);
+  const [visitData,setVisitData]=useState({today:0,total:0,recent:[]});
   const [searchQ,setSearchQ]=useState("");
   const [catTab,setCatTab]=useState("ranking");
   const [selCat,setSelCat]=useState("m_elem4");
@@ -506,7 +508,7 @@ function App(){
   const [pinUnlocked,setPinUnlocked]=useState(false);
   const [pinCb,setPinCb]=useState(null);
   const [flash,setFlash]=useState(0);
-  useEffect(()=>{ loadData(); },[flash]);
+  useEffect(()=>{ loadData(); recordVisit(); },[flash]);
   async function loadData(){
     const {data:ms} = await sb.from("members").select("*");
     const {data:ts} = await sb.from("trials").select("*");
@@ -523,6 +525,22 @@ function App(){
     });
     setMembers(Object.values(memberMap).map(enrich));
     setLoading(false);
+  }
+  async function recordVisit(){
+    // セッション中は1回だけカウント
+    if(sessionStorage.getItem("visited_today")===today())return;
+    sessionStorage.setItem("visited_today",today());
+    try {
+      await sb.rpc("increment_visit",{p_date:today()});
+    } catch(e) { console.warn("visit record failed",e); }
+  }
+  async function loadVisits(){
+    const {data} = await sb.from("visits").select("*").order("date",{ascending:false}).limit(30);
+    if(!data){setVisitData({today:0,total:0,recent:[]});return;}
+    const t = today();
+    const todayRow = data.find(v=>v.date===t);
+    const total = data.reduce((a,b)=>a+(b.count||0),0);
+    setVisitData({today:todayRow?todayRow.count:0,total,recent:data});
   }
 
   const [mForm,setMF]=useState({name:"",category:"m_elem4",distance:"1000m",h:"",m:"",s:"",cs:"",date:today(),event_no:"",event_name_input:"",official:true});
@@ -730,7 +748,7 @@ function App(){
           <header className="sh">
             <div style={{maxWidth:760,margin:"0 auto",padding:"0 16px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",height:58}}>
-                <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:26,fontStyle:"italic",color:"#fff"}}>VAMOS<span style={{color:"#ff4d00"}}>RC</span></div>
+                <div onContextMenu={e=>{e.preventDefault();loadVisits();setShowVisits(true);}} onTouchStart={e=>{const timer=setTimeout(()=>{loadVisits();setShowVisits(true);},700);e.currentTarget._lp=timer;}} onTouchEnd={e=>clearTimeout(e.currentTarget._lp)} onTouchMove={e=>clearTimeout(e.currentTarget._lp)} style={{cursor:"pointer",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}><div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:26,fontStyle:"italic",color:"#fff"}}>VAMOS<span style={{color:"#ff4d00"}}>RC</span></div></div>
                 <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
                   <button style={{fontSize:11,padding:"6px 10px",display:"flex",alignItems:"center",gap:5,background:"rgba(255,255,255,.12)",color:"#fff",border:"1px solid rgba(255,255,255,.3)",borderRadius:4,fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,cursor:"pointer"}} onClick={()=>setShowSearch(true)}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -925,6 +943,41 @@ function App(){
         <OfficialToggle value={tForm.official!==false} onChange={v=>setTF(f=>({...f,official:v}))}/>
         <div style={{display:"flex",gap:8}}><button className="bg" style={{flex:1}} onClick={()=>setShowAddT(false)}>キャンセル</button><button className="ba" style={{flex:2}} onClick={addTrial}>記録する</button></div>
       </Modal>}
+
+      {showVisits&&(
+        <div className="ov" onClick={e=>e.target===e.currentTarget&&setShowVisits(false)}>
+          <div className="mo">
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
+              <span style={{fontSize:18}}>📊</span>
+              <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:20,color:"#fff",fontStyle:"italic"}}>訪問数</div>
+            </div>
+            <div style={{display:"flex",gap:10,marginBottom:14}}>
+              <div style={{flex:1,background:"#0f0f0f",border:"1px solid #252525",borderRadius:6,padding:"12px 14px"}}>
+                <div style={{fontSize:10,color:"#666",fontFamily:"Noto Sans JP,sans-serif",marginBottom:5}}>今日の訪問</div>
+                <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:32,color:"#ff4d00",fontStyle:"italic",lineHeight:1}}>{visitData.today}</div>
+              </div>
+              <div style={{flex:1,background:"#0f0f0f",border:"1px solid #252525",borderRadius:6,padding:"12px 14px"}}>
+                <div style={{fontSize:10,color:"#666",fontFamily:"Noto Sans JP,sans-serif",marginBottom:5}}>累計訪問</div>
+                <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:32,color:"#aaa",fontStyle:"italic",lineHeight:1}}>{visitData.total}</div>
+              </div>
+            </div>
+            {visitData.recent.length>0&&(
+              <div style={{marginBottom:14}}>
+                <div style={{fontSize:10,color:"#666",fontFamily:"Noto Sans JP,sans-serif",marginBottom:8}}>直近の記録</div>
+                <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                  {visitData.recent.slice(0,7).map((v,i)=>(
+                    <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"5px 10px",background:"#141414",borderRadius:4,border:"1px solid #252525"}}>
+                      <span style={{fontSize:11,color:"#888",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(v.date)}</span>
+                      <span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:14,color:"#aaa",fontStyle:"italic"}}>{v.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            <button className="bg" style={{width:"100%"}} onClick={()=>setShowVisits(false)}>閉じる</button>
+          </div>
+        </div>
+      )}
 
       {showSearch&&(
         <div className="ov" onClick={e=>e.target===e.currentTarget&&setShowSearch(false)}>
