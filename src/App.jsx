@@ -362,8 +362,8 @@ function TTPage({ttData,onOpenMember,requirePin,ttInfo,onSaveTTInfo}){
           {ranking.length===0&&<Empty label="この種目の記録がありません"/>}
           {ranking.map((row,i)=>{ const cat=CMAP[row.category||row.memberCategory]; const c=vc(row.vdot); const rk=getRank(ranking,i,r=>r.time); const rd=rankDisplay(rk); return (
             <div key={row.memberId} className={`dr fu ${rk===1?"gold":rk===2?"silver":rk===3?"bronze":""}`} style={{animationDelay:`${i*30}ms`}} onClick={()=>onOpenMember(row.memberId)}>
-              <div style={{flexShrink:0,width:32,textAlign:"center"}}>
-                {rd.isMedal?<span style={{fontSize:20}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{rd.medal}</span>}
+              <div style={{flexShrink:0,width:26,textAlign:"center"}}>
+                {rd.isMedal?<span style={{fontSize:17}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:14,color:"#444"}}>{rd.medal}</span>}
               </div>
               <div style={{flex:1,minWidth:0,display:"flex",alignItems:"center",gap:6}}>
                 <span style={{fontWeight:700,fontSize:17,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",whiteSpace:"nowrap",textAlign:"left"}}>{row.memberName}</span>
@@ -477,7 +477,7 @@ const CSS=`
 .dist-pill{display:inline-flex;align-items:center;padding:7px 14px;border-radius:20px;border:1px solid #252525;background:#141414;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:600;color:#555;transition:all .2s;white-space:nowrap;}
 .dist-pill:hover{border-color:#444;color:#aaa;}
 .dist-pill.sel{background:rgba(255,77,0,.12);border-color:#ff4d00;color:#ff6b35;}
-.dr{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:6px;background:#1a1a1a;border:1px solid #252525;margin-bottom:5px;cursor:pointer;transition:border-color .2s,transform .25s;}
+.dr{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:5px;background:#1a1a1a;border:1px solid #252525;margin-bottom:3px;cursor:pointer;transition:border-color .2s,transform .25s;}
 .dr:hover{border-color:#333;transform:translateX(3px);}
 .dr.gold{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.05);}
 .dr.silver{border-color:rgba(192,192,192,.3);background:rgba(192,192,192,.03);}
@@ -811,19 +811,19 @@ function App(){
                 {distRanking.map((row,i)=>{ const cat=CMAP[row.category]; const c=vc(row.vdot); const rk=getRank(distRanking,i,r=>r.time); const rd=rankDisplay(rk); const cls=rk===1?"gold":rk===2?"silver":rk===3?"bronze":""; return (
                   <div key={row.memberId} className={`dr fu ${cls}`} style={{animationDelay:`${i*30}ms`}} onClick={()=>openM(row.memberId)}>
                     <div style={{flexShrink:0,width:32,textAlign:"center"}}>
-                      {rd.isMedal?<span style={{fontSize:20}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{rd.medal}</span>}
+                      {rd.isMedal?<span style={{fontSize:17}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:14,color:"#444"}}>{rd.medal}</span>}
                     </div>
                     <div style={{flex:1,minWidth:0}}>
-                      <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"nowrap"}}>
-                        <span style={{fontWeight:700,fontSize:17,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",whiteSpace:"nowrap",textAlign:"left"}}>{row.name}</span>
+                      <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:1,flexWrap:"nowrap"}}>
+                        <span style={{fontWeight:700,fontSize:15,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",whiteSpace:"nowrap",textAlign:"left"}}>{row.name}</span>
                         <div style={{flex:1}}/>
                         {cat&&<span className="vbadge" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
                       </div>
-                      <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}><span style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(row.date)}</span>{row.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif"}}>{row.event_name}</span>}</div>
+                      <div style={{display:"flex",alignItems:"center",gap:5,flexWrap:"wrap"}}><span style={{fontSize:9,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(row.date)}</span>{row.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif"}}>{row.event_name}</span>}</div>
                     </div>
                     <div style={{textAlign:"right",flexShrink:0}}>
-                      <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:24,color:"#e0e0e0",lineHeight:1,fontStyle:"italic"}}>{fmtT(row.time)}</div>
-                      <div style={{fontSize:10,color:c,fontFamily:"Barlow Condensed,sans-serif",fontWeight:700,marginTop:2}}>VDOT {row.vdot.toFixed(1)}</div>
+                      <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:20,color:"#e0e0e0",lineHeight:1,fontStyle:"italic"}}>{fmtT(row.time)}</div>
+                      <div style={{fontSize:9,color:c,fontFamily:"Barlow Condensed,sans-serif",fontWeight:700,marginTop:1}}>VDOT {row.vdot.toFixed(1)}</div>
                     </div>
                     <span style={{color:"#333",fontSize:15,flexShrink:0}}>›</span>
                   </div>
@@ -1420,26 +1420,26 @@ function MCard({m,idx,onClick,allMembers}){
   const rd=rankDisplay(rk);
   return (
     <div className={`dr fu ${rk===1?"gold":rk===2?"silver":rk===3?"bronze":""}`} style={{animationDelay:`${i*30}ms`}} onClick={onClick}>
-      <div style={{flexShrink:0,width:32,textAlign:"center"}}>
-        {rd.isMedal?<span style={{fontSize:20}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:16,color:"#444"}}>{rd.medal}</span>}
+      <div style={{flexShrink:0,width:26,textAlign:"center"}}>
+        {rd.isMedal?<span style={{fontSize:17}}>{rd.medal}</span>:<span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:14,color:"#444"}}>{rd.medal}</span>}
       </div>
       <div style={{flex:1,minWidth:0}}>
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"nowrap"}}>
-          <span style={{fontWeight:700,fontSize:17,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",whiteSpace:"nowrap",textAlign:"left"}}>{m.name}</span>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:1,flexWrap:"nowrap"}}>
+          <span style={{fontWeight:700,fontSize:15,fontFamily:"Noto Sans JP,sans-serif",letterSpacing:"-.01em",whiteSpace:"nowrap",textAlign:"left"}}>{m.name}</span>
           <div style={{flex:1}}/>
           {m.currentOfficial===false&&<span className="vbadge" style={{color:"#fbbf24",border:"1px solid rgba(251,191,36,.3)",background:"rgba(251,191,36,.08)"}}>オープン</span>}
           {cat&&<span className="vbadge" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
         </div>
         {m.bestTrial&&(
-          <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-            <span style={{fontSize:10,color:"#888",fontFamily:"Noto Sans JP,sans-serif"}}>{m.bestTrial.distance} {fmtT(m.bestTrial.time)}</span>
+          <div style={{display:"flex",alignItems:"center",gap:5,flexWrap:"wrap"}}>
+            <span style={{fontSize:9,color:"#888",fontFamily:"Noto Sans JP,sans-serif"}}>{m.bestTrial.distance} {fmtT(m.bestTrial.time)}</span>
             {m.bestTrial.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif"}}>{m.bestTrial.event_name}</span>}
           </div>
         )}
       </div>
       <div style={{textAlign:"right",flexShrink:0}}>
-        <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:24,color:"#e0e0e0",lineHeight:1,fontStyle:"italic"}}>{m.vdot.toFixed(1)}</div>
-        <div style={{fontSize:10,color:vc(m.vdot),fontFamily:"Barlow Condensed,sans-serif",fontWeight:700,marginTop:2}}>VDOT</div>
+        <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:20,color:"#e0e0e0",lineHeight:1,fontStyle:"italic"}}>{m.vdot.toFixed(1)}</div>
+        <div style={{fontSize:9,color:vc(m.vdot),fontFamily:"Barlow Condensed,sans-serif",fontWeight:700,marginTop:1}}>VDOT</div>
       </div>
       <span style={{color:"#333",fontSize:15,flexShrink:0}}>›</span>
     </div>
