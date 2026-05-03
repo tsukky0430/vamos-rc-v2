@@ -348,7 +348,7 @@ function TTPage({ttData,onOpenMember,requirePin,ttInfo,onSaveTTInfo}){
                     {w&&<span style={{fontSize:18}}>{w.e}</span>}
                     {i.temp&&<span>{i.temp}℃</span>}
                     {i.humidity&&<span>湿度{i.humidity}%</span>}
-                    {i.startTime&&<span>{i.startTime}</span>}
+                    {i.startTime&&<span>{(()=>{const s=String(i.startTime);if(/^\d{1,2}:\d{2}/.test(s))return s.slice(0,5);try{const d=new Date(s);if(!isNaN(d.getTime()))return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}catch(e){}return s;})()}</span>}
                   </span>
                 );})()}
               </div>
