@@ -146,11 +146,16 @@ function Chart({trials,color}){
             <filter id="gl"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
           <path d={area} fill="url(#cg)"/>
-          <polyline points={line} fill="none" stroke={color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" filter="url(#gl)"/>
-          {shown.map((t,i)=>{ const x=cx(i),y=cy(t.vdot); return (
+          {shown.slice(0,-1).map((t,i)=>{const x1=cx(i),y1=cy(t.vdot),x2=cx(i+1),y2=cy(shown[i+1].vdot);const segGradId=`sg${i}`;return(
+            <g key={"seg"+i}>
+              <defs><linearGradient id={segGradId} x1={x1} y1={y1} x2={x2} y2={y2} gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor={vc(t.vdot)}/><stop offset="100%" stopColor={vc(shown[i+1].vdot)}/></linearGradient></defs>
+              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={`url(#${segGradId})`} strokeWidth="2.5" strokeLinecap="round" filter="url(#gl)"/>
+            </g>
+          );})}
+          {shown.map((t,i)=>{ const x=cx(i),y=cy(t.vdot); const pc=vc(t.vdot); return (
             <g key={t.id}>
-              <circle cx={x} cy={y} r="4" fill={color} stroke="#0d0d0d" strokeWidth="2" filter="url(#gl)"/>
-              <text x={x} y={y-11} textAnchor="middle" fill={color} fontSize="10" fontFamily="Barlow Condensed,sans-serif" fontWeight="700">{t.vdot.toFixed(1)}</text>
+              <circle cx={x} cy={y} r="4" fill={pc} stroke="#0d0d0d" strokeWidth="2" filter="url(#gl)"/>
+              <text x={x} y={y-11} textAnchor="middle" fill={pc} fontSize="10" fontFamily="Barlow Condensed,sans-serif" fontWeight="700">{t.vdot.toFixed(1)}</text>
               <text x={x} y={PT+CH+19} textAnchor="middle" fill="#ccc" fontSize="10" fontFamily="Barlow Condensed,sans-serif" fontWeight="600">{fmtT(t.time)}</text>
               <text x={x} y={PT+CH+31} textAnchor="middle" fill="#555" fontSize="8" fontFamily="sans-serif">{t.distance.replace("ハーフマラソン","HM").replace("マラソン","フル")}</text>
               <text x={x} y={PT+CH+44} textAnchor="middle" fill="#444" fontSize="8" fontFamily="Barlow Condensed,sans-serif">{fmtD(t.date).slice(5)}</text>
