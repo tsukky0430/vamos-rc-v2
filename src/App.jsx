@@ -503,7 +503,6 @@ function App(){
   const [showAddT,setShowAddT]=useState(false);
   const [editTrial,setEditTrial]=useState(null);
   const [eForm,setEF]=useState({distance:"1000m",h:"",m:"",s:"",cs:"",date:today(),category:"",event_no:"",event_name_input:"",official:true});
-  const [showReset,setShowReset]=useState(false);
   const [showPin,setShowPin]=useState(false);
   const [pinUnlocked,setPinUnlocked]=useState(false);
   const [pinCb,setPinCb]=useState(null);
@@ -527,7 +526,6 @@ function App(){
     setLoading(false);
   }
   async function recordVisit(){
-    // セッション中は1回だけカウント
     if(sessionStorage.getItem("visited_today")===today())return;
     sessionStorage.setItem("visited_today",today());
     try {
@@ -709,11 +707,6 @@ function App(){
     await sb.from("members").update({name:newName.trim()}).eq("id",id);
     setFlash(n=>n+1);
   }
-  async function reset(){
-    await sb.from("trials").delete().neq("id","00000000-0000-0000-0000-000000000000");
-    await sb.from("members").delete().neq("id","00000000-0000-0000-0000-000000000000");
-    setShowReset(false);setFlash(n=>n+1);
-  }
 
   if(loading)return(
     <div style={{minHeight:"100dvh",display:"flex",alignItems:"center",justifyContent:"center",background:"#0d0d0d"}}>
@@ -754,7 +747,6 @@ function App(){
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                     <span>検索</span>
                   </button>
-                  <button className="bg" style={{fontSize:11,padding:"6px 11px"}} onClick={()=>requirePin(()=>setShowReset(true))}>リセット</button>
                   <button className="ba rp-host" style={{fontSize:12,padding:"7px 14px"}} onClick={()=>requirePin(()=>setShowAddM(true))}>＋ 追加</button>
                 </div>
               </div>
@@ -1036,11 +1028,6 @@ function App(){
           </div>
         </div>
       )}
-
-      {showReset&&<Modal onClose={()=>setShowReset(false)} title="データをリセット">
-        <div style={{fontSize:13,color:"#777",lineHeight:1.7,marginBottom:16,fontFamily:"Noto Sans JP,sans-serif"}}>全データが削除されサンプルデータに戻ります。</div>
-        <div style={{display:"flex",gap:8}}><button className="bg" style={{flex:1}} onClick={()=>setShowReset(false)}>キャンセル</button><button style={{flex:1,background:"#ef4444",color:"#fff",border:"none",borderRadius:4,fontSize:13,fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,cursor:"pointer",padding:"9px"}} onClick={reset}>リセット</button></div>
-      </Modal>}
 
       {showPin&&<PinModal onSuccess={()=>{setShowPin(false);if(pinCb){pinCb();setPinCb(null);}}} onClose={()=>{setShowPin(false);setPinCb(null);}}/>}
     </div>
