@@ -508,39 +508,6 @@ function App(){
   const [ttInfo,setTTInfo]=useState({});
   const [flash,setFlash]=useState(0);
   useEffect(()=>{ loadData(); recordVisit(); loadTTInfo(); },[flash]);
-  
-  async function loadTTInfo(){
-    try {
-      const {data} = await sb.from("tt_info").select("*");
-      if(data){
-        const map = {};
-        data.forEach(t => {
-          map[t.event_no] = {
-            weather: t.weather || "",
-            temp: t.temp != null ? String(t.temp) : "",
-            humidity: t.humidity != null ? String(t.humidity) : "",
-            startTime: t.start_time || ""
-          };
-        });
-        setTTInfo(map);
-      }
-    } catch(e) { console.warn("tt_info load failed",e); }
-  }
-  
-  async function saveTTInfo(eventNo, form){
-    try {
-      const record = {
-        event_no: eventNo,
-        weather: form.weather || null,
-        temp: form.temp ? parseInt(form.temp) : null,
-        humidity: form.humidity ? parseInt(form.humidity) : null,
-        start_time: form.startTime || null
-      };
-      await sb.from("tt_info").upsert(record, {onConflict: "event_no"});
-      setTTInfo(prev => ({...prev, [eventNo]: {...form}}));
-    } catch(e) { console.warn("tt_info save failed",e); alert("保存に失敗しました: "+e.message); }
-  }
-
   async function loadData(){
     const {data:ms} = await sb.from("members").select("*");
     const {data:ts} = await sb.from("trials").select("*");
@@ -558,12 +525,39 @@ function App(){
     setMembers(Object.values(memberMap).map(enrich));
     setLoading(false);
   }
+  async function loadTTInfo(){
+    try {
+      const {data} = await sb.from("tt_info").select("*");
+      if(data){
+        const map = {};
+        data.forEach(t => {
+          map[t.event_no] = {
+            weather: t.weather || "",
+            temp: t.temp != null ? String(t.temp) : "",
+            humidity: t.humidity != null ? String(t.humidity) : "",
+            startTime: t.start_time || ""
+          };
+        });
+        setTTInfo(map);
+      }
+    } catch(e) { console.warn("tt_info load failed",e); }
+  }
+  async function saveTTInfo(eventNo, form){
+    try {
+      await sb.from("tt_info").upsert({
+        event_no: eventNo,
+        weather: form.weather || null,
+        temp: form.temp ? parseInt(form.temp) : null,
+        humidity: form.humidity ? parseInt(form.humidity) : null,
+        start_time: form.startTime || null
+      }, {onConflict: "event_no"});
+      setTTInfo(prev => ({...prev, [eventNo]: {...form}}));
+    } catch(e) { console.warn("tt_info save failed",e); alert("保存に失敗: "+e.message); }
+  }
   async function recordVisit(){
     if(sessionStorage.getItem("visited_today")===today())return;
     sessionStorage.setItem("visited_today",today());
-    try {
-      await sb.rpc("increment_visit",{p_date:today()});
-    } catch(e) { console.warn("visit record failed",e); }
+    try { await sb.rpc("increment_visit",{p_date:today()}); } catch(e) { console.warn(e); }
   }
   async function loadVisits(){
     const {data} = await sb.from("visits").select("*").order("date",{ascending:false}).limit(30);
@@ -752,8 +746,6 @@ function App(){
   return (
     <div style={{minHeight:"100vh",background:"#0d0d0d",color:"#f0f0f0"}}>
       <style>{CSS}</style>
-      {flash>0&&<Toast key={flash}/>}
-
       {page==="member"&&am&&(
         <MemberPage member={am} onBack={goBack}
           onAddTrial={()=>{setTF({distance:"1000m",h:"",m:"",s:"",cs:"",date:today(),category:am.category,event_no:""});setShowAddT(true);}}
@@ -1069,6 +1061,7 @@ function App(){
 
 function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,catRankMap,onEditTrial,editTrial,eForm,setEF,onSaveTrial,onCancelEdit,onRenameMember}){
   const [tab,setTab]=useState("history");
+  const [openPrinciple,setOpenPrinciple]=useState(null);
   const [showRenameModal,setShowRenameModal]=useState(false);
   const [renameInput,setRenameInput]=useState(member.name);
   const [goals,setGoals]=useState([]);
@@ -1265,6 +1258,56 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
                 </div>
               ))}
             </div>
+
+            <div style={{marginTop:24,paddingTop:18,borderTop:"1px solid #1f1f1f"}}>
+              <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:18,color:"#fff",fontStyle:"italic",marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
+                <span style={{width:3,height:16,background:"#ff4d00",borderRadius:2}}/>
+                <span>トレーニングの原理原則</span>
+              </div>
+
+              <div style={{marginBottom:14}}>
+                <div style={{fontSize:11,color:"#888",fontFamily:"Noto Sans JP,sans-serif",fontWeight:600,marginBottom:6,letterSpacing:".05em"}}>📘 3原理</div>
+                <div style={{display:"flex",flexDirection:"column",gap:5}}>
+                  {[
+                    {k:"p1",t:"過負荷の原理（オーバーロード）",d:"日常生活以上の負荷をかけることで、身体は初めて適応し能力が向上する。慣れた強度のままでは成長は止まる。"},
+                    {k:"p2",t:"特異性の原理",d:"鍛えた能力しか伸びない。スピードを伸ばしたいならスピード系、持久力を伸ばしたいなら持久系の刺激を。目的に合った練習が結果を生む。"},
+                    {k:"p3",t:"可逆性の原理",d:"鍛えた能力は使わなければ失われる。約2週間で低下が始まり、4〜6週間で大きく後退する。継続することが最も重要。"},
+                  ].map((it,idx)=>{const isOpen=openPrinciple===it.k;return(
+                    <div key={it.k} style={{background:"#141414",border:`1px solid ${isOpen?"#ff4d00":"#252525"}`,borderRadius:6,overflow:"hidden",transition:"border-color .2s"}}>
+                      <button onClick={()=>setOpenPrinciple(isOpen?null:it.k)} style={{width:"100%",background:"none",border:"none",padding:"9px 12px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",textAlign:"left"}}>
+                        <span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:16,color:isOpen?"#ff4d00":"#666",fontStyle:"italic",lineHeight:1,flexShrink:0,minWidth:18}}>{idx+1}</span>
+                        <span style={{fontSize:12,fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,color:isOpen?"#fff":"#aaa",flex:1}}>{it.t}</span>
+                        <span style={{fontSize:11,color:isOpen?"#ff4d00":"#444",transform:isOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</span>
+                      </button>
+                      {isOpen&&<div style={{padding:"4px 14px 12px 40px",fontSize:11,color:"#888",fontFamily:"Noto Sans JP,sans-serif",lineHeight:1.7}}>{it.d}</div>}
+                    </div>
+                  );})}
+                </div>
+              </div>
+
+              <div>
+                <div style={{fontSize:11,color:"#888",fontFamily:"Noto Sans JP,sans-serif",fontWeight:600,marginBottom:6,letterSpacing:".05em"}}>📗 5原則</div>
+                <div style={{display:"flex",flexDirection:"column",gap:5}}>
+                  {[
+                    {k:"r1",t:"漸進性の原則",d:"負荷は少しずつ上げる。急に強度や量を増やすと故障や燃え尽きの原因に。一歩ずつ着実に積み上げる。"},
+                    {k:"r2",t:"全面性の原則",d:"一つの能力だけでなく、筋力・持久力・柔軟性・調整力など全身をバランスよく鍛える。偏りは伸び悩みと故障を生む。"},
+                    {k:"r3",t:"個別性の原則",d:"他人と同じ練習が自分に合うとは限らない。年齢・経験・体力・体格によって最適なメニューは異なる。自分の身体と対話しながら進める。"},
+                    {k:"r4",t:"意識性の原則",d:"「なぜこの練習をやるのか」を理解して取り組むほど効果は大きくなる。目的を持った1時間は、漫然とした3時間に勝る。"},
+                    {k:"r5",t:"反復性の原則",d:"トレーニングは続けてこそ効果が出る。一度の追い込みより、適切な強度の繰り返しが本物の力を作る。継続は才能を超える。"},
+                  ].map((it,idx)=>{const isOpen=openPrinciple===it.k;return(
+                    <div key={it.k} style={{background:"#141414",border:`1px solid ${isOpen?"#ff4d00":"#252525"}`,borderRadius:6,overflow:"hidden",transition:"border-color .2s"}}>
+                      <button onClick={()=>setOpenPrinciple(isOpen?null:it.k)} style={{width:"100%",background:"none",border:"none",padding:"9px 12px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",textAlign:"left"}}>
+                        <span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:16,color:isOpen?"#ff4d00":"#666",fontStyle:"italic",lineHeight:1,flexShrink:0,minWidth:18}}>{idx+1}</span>
+                        <span style={{fontSize:12,fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,color:isOpen?"#fff":"#aaa",flex:1}}>{it.t}</span>
+                        <span style={{fontSize:11,color:isOpen?"#ff4d00":"#444",transform:isOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</span>
+                      </button>
+                      {isOpen&&<div style={{padding:"4px 14px 12px 40px",fontSize:11,color:"#888",fontFamily:"Noto Sans JP,sans-serif",lineHeight:1.7}}>{it.d}</div>}
+                    </div>
+                  );})}
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
 
