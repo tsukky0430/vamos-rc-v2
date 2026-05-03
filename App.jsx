@@ -778,7 +778,6 @@ function App(){
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                     <span>検索</span>
                   </button>
-                  <button className="ba rp-host" style={{fontSize:12,padding:"7px 14px"}} onClick={()=>requirePin(()=>setShowAddM(true))}>＋ 追加</button>
                 </div>
               </div>
             </div>
@@ -1163,9 +1162,6 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
                 <Chart trials={chrono} color={color}/>
               </div>
             )}
-            <div style={{display:"flex",justifyContent:"flex-end",marginBottom:12}}>
-              <button className="ba rp-host" style={{fontSize:12,padding:"8px 16px"}} onClick={e=>{addR(e);requirePin(onAddTrial);}}>{renderR()}＋ タイムを記録</button>
-            </div>
             {display.map((t,i)=>{ const isPB=pbTrialIds.has(t.id),tc=vc(t.vdot); return (
               <div key={t.id} className={`tr fu ${isPB?"pb":""}`} style={{animationDelay:`${i*28}ms`,cursor:"pointer"}} onContextMenu={e=>{e.preventDefault();onEditTrial(t);}} onTouchStart={e=>{const timer=setTimeout(()=>onEditTrial(t),600);e.currentTarget._lp=timer;}} onTouchEnd={e=>{clearTimeout(e.currentTarget._lp);}} onTouchMove={e=>{clearTimeout(e.currentTarget._lp);}}>
                 <div style={{flexShrink:0,minWidth:72}}>
@@ -1178,7 +1174,7 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
                   </div>
                 </div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:2}}><span style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{t.distance}</span>{t.official===false&&<span style={{fontSize:8,color:"#6366f1",border:"1px solid #6366f128",background:"rgba(99,102,241,.08)",padding:"1px 4px",borderRadius:2,fontFamily:"Noto Sans JP,sans-serif"}}>オープン参加</span>}</div>
+                  <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:2}}><span style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{t.distance}</span>{t.official===false&&<span style={{fontSize:8,color:"#fbbf24",border:"1px solid rgba(251,191,36,.3)",background:"rgba(251,191,36,.08)",padding:"1px 4px",borderRadius:2,fontFamily:"Noto Sans JP,sans-serif",fontWeight:600}}>オープン参加</span>}</div>
                   <div style={{display:"flex",alignItems:"center",gap:6}}>
                     <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:19,color:"#e0e0e0",fontStyle:"italic"}}>{fmtT(t.time)}</div>
                     {isPB&&<span style={{fontSize:10,fontWeight:700,background:"rgba(245,158,11,.12)",color:"#f59e0b",border:"1px solid rgba(245,158,11,.25)",borderRadius:3,padding:"2px 6px",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>PB</span>}
@@ -1188,7 +1184,6 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
                   <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:22,color:tc,fontStyle:"italic"}}>{t.vdot.toFixed(1)}</div>
                   <div style={{fontSize:9,color:"#444",fontFamily:"Noto Sans JP,sans-serif"}}>VDOT</div>
                 </div>
-                <button className="bd" onClick={()=>onDelTrial(t.id)}>✕</button>
               </div>
             );})}
             {!member.trials.length&&<Empty label="まだ記録がありません"/>}
@@ -1234,7 +1229,8 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
                     <OfficialToggle value={eForm.official!==false} onChange={v=>setEF(f=>({...f,official:v}))}/>
                     <div style={{display:"flex",gap:8}}>
                       <button className="bg" style={{flex:1}} onClick={onCancelEdit}>キャンセル</button>
-                      <button style={{flex:2,background:"#6366f1",color:"#fff",border:"none",borderRadius:4,fontSize:13,fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,cursor:"pointer",padding:"9px"}} onClick={onSaveTrial}>保存する</button>
+                      <button style={{flex:1,background:"transparent",color:"#ef4444",border:"1px solid rgba(239,68,68,.3)",borderRadius:4,fontSize:13,fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,cursor:"pointer",padding:"9px"}} onClick={()=>{if(confirm("この記録を削除しますか？")){onDelTrial(editTrial.id);onCancelEdit();}}}>削除</button>
+                      <button style={{flex:1.5,background:"#6366f1",color:"#fff",border:"none",borderRadius:4,fontSize:13,fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,cursor:"pointer",padding:"9px"}} onClick={onSaveTrial}>保存</button>
                     </div>
                   </div>
                 </div>
