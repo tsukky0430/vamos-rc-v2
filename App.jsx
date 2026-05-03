@@ -738,7 +738,7 @@ function App(){
   if(loading)return(
     <div style={{minHeight:"100dvh",display:"flex",alignItems:"center",justifyContent:"center",background:"#0d0d0d"}}>
       <div style={{textAlign:"center"}}>
-        <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:32,color:"#ff4d00",fontStyle:"italic",lineHeight:1.1}}>VAMOS RC</div><div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:48,color:"#ffe066",fontStyle:"italic",marginBottom:8,letterSpacing:"-0.02em"}}>RESULT</div>
+        <div style={{transform:"scale(1.5)",marginBottom:18}}><div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:26,fontStyle:"italic",color:"#fff"}}>VAMOS<span style={{color:"#ff4d00"}}>RC</span></div></div>
         <div style={{fontSize:11,color:"#444",fontFamily:"Noto Sans JP,sans-serif"}}>読み込み中...</div>
       </div>
     </div>
