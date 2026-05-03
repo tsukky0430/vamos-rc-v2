@@ -311,10 +311,9 @@ const WEATHERS=[
   {v:"windy",e:"💨",l:"風"},
 ];
 
-function TTPage({ttData,onOpenMember,requirePin}){
+function TTPage({ttData,onOpenMember,requirePin,ttInfo,onSaveTTInfo}){
   const [selTT,setSelTT]=useState(ttData.length>0?ttData[0].event_no:null);
   const [selDist,setSelDist]=useState(null);
-  const [ttInfo,setTTInfo]=useState({});
   const [editTT,setEditTT]=useState(null);
   const [editForm,setEditForm]=useState({weather:"",temp:"",humidity:"",startTime:""});
   const selTTData=ttData.find(t=>t.event_no===selTT)||null;
@@ -413,7 +412,7 @@ function TTPage({ttData,onOpenMember,requirePin}){
               </div>
               <div style={{display:"flex",gap:8,marginTop:4}}>
                 <button className="bg" style={{flex:1}} onClick={()=>setEditTT(null)}>キャンセル</button>
-                <button className="ba" style={{flex:2}} onClick={()=>{setTTInfo({...ttInfo,[editTT]:{...editForm}});setEditTT(null);}}>保存</button>
+                <button className="ba" style={{flex:2}} onClick={()=>{onSaveTTInfo(editTT,editForm);setEditTT(null);}}>保存</button>
               </div>
             </div>
           </div>
@@ -506,8 +505,42 @@ function App(){
   const [showPin,setShowPin]=useState(false);
   const [pinUnlocked,setPinUnlocked]=useState(false);
   const [pinCb,setPinCb]=useState(null);
+  const [ttInfo,setTTInfo]=useState({});
   const [flash,setFlash]=useState(0);
-  useEffect(()=>{ loadData(); recordVisit(); },[flash]);
+  useEffect(()=>{ loadData(); recordVisit(); loadTTInfo(); },[flash]);
+  
+  async function loadTTInfo(){
+    try {
+      const {data} = await sb.from("tt_info").select("*");
+      if(data){
+        const map = {};
+        data.forEach(t => {
+          map[t.event_no] = {
+            weather: t.weather || "",
+            temp: t.temp != null ? String(t.temp) : "",
+            humidity: t.humidity != null ? String(t.humidity) : "",
+            startTime: t.start_time || ""
+          };
+        });
+        setTTInfo(map);
+      }
+    } catch(e) { console.warn("tt_info load failed",e); }
+  }
+  
+  async function saveTTInfo(eventNo, form){
+    try {
+      const record = {
+        event_no: eventNo,
+        weather: form.weather || null,
+        temp: form.temp ? parseInt(form.temp) : null,
+        humidity: form.humidity ? parseInt(form.humidity) : null,
+        start_time: form.startTime || null
+      };
+      await sb.from("tt_info").upsert(record, {onConflict: "event_no"});
+      setTTInfo(prev => ({...prev, [eventNo]: {...form}}));
+    } catch(e) { console.warn("tt_info save failed",e); alert("保存に失敗しました: "+e.message); }
+  }
+
   async function loadData(){
     const {data:ms} = await sb.from("members").select("*");
     const {data:ts} = await sb.from("trials").select("*");
@@ -870,7 +903,7 @@ function App(){
             )}
 
             {mainTab==="tt"&&(
-              <TTPage ttData={ttData} onOpenMember={openM} requirePin={requirePin}/>
+              <TTPage ttData={ttData} onOpenMember={openM} requirePin={requirePin} ttInfo={ttInfo} onSaveTTInfo={saveTTInfo}/>
             )}
 
             {mainTab==="ranking"&&(
