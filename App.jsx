@@ -36,8 +36,10 @@ const cs2sec = (cs) => cs/100;
 const tocs = (h,m,s,cs) => (parseInt(h||0)*3600+parseInt(m||0)*60+parseInt(s||0))*100+parseInt(cs||0);
 const fmtT = (cs) => {
   const tot=Math.floor(cs/100),h=Math.floor(tot/3600),m=Math.floor((tot%3600)/60),s=tot%60,c=cs%100;
+  // 1時間以上 (マラソン・ハーフマラソンなど) は 1/100秒を省略
+  if(h>0) return `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
   const ss=`${String(s).padStart(2,"0")}.${String(c).padStart(2,"0")}`;
-  return h>0?`${h}:${String(m).padStart(2,"0")}:${ss}`:`${m}:${ss}`;
+  return `${m}:${ss}`;
 };
 const fmtD = (iso) => { const d=new Date(iso); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}`; };
 const uid = () => Math.random().toString(36).slice(2);
