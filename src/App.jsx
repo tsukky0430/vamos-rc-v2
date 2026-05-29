@@ -371,7 +371,29 @@ function TTPage({ttData,members,onOpenMember,requirePin,ttInfo,onSaveTTInfo}){
                   </span>
                 );})()}
               </div>
-              <div style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{selTTData.trials.length}件の記録</div>
+              <div style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif",display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                <span>{fmtD(selTTData.date)}</span>
+                <span style={{color:"#333"}}>·</span>
+                <span>{selTTData.trials.length}件の記録</span>
+                {(()=>{
+                  // このTTでPB(自己ベスト)を更新した「メンバー数」を計算 (種目問わず)
+                  const pbMembers = new Set();
+                  selTTData.trials.forEach(t=>{
+                    const member = members?.find(m=>m.id===t.memberId);
+                    if(!member) return;
+                    const sameDist = member.trials.filter(tt=>tt.distance===t.distance);
+                    if(!sameDist.length) return;
+                    const bestTime = Math.min(...sameDist.map(tt=>tt.time));
+                    if(t.time===bestTime) pbMembers.add(t.memberId);
+                  });
+                  return pbMembers.size>0?(
+                    <>
+                      <span style={{color:"#333"}}>·</span>
+                      <span style={{color:"#f59e0b",fontWeight:700}}>🏆 PB更新 {pbMembers.size}名</span>
+                    </>
+                  ):null;
+                })()}
+              </div>
             </div>
             <button onClick={()=>requirePin(()=>{const i=ttInfo[selTTData.event_no]||{};setEditForm({weather:i.weather||"",temp:i.temp||"",humidity:i.humidity||"",startTime:i.startTime||""});setEditTT(selTTData.event_no);})} style={{flexShrink:0,padding:"5px 10px",borderRadius:4,border:"1px solid #252525",background:"#141414",color:"#777",fontFamily:"Barlow Condensed,sans-serif",fontWeight:800,fontSize:13,fontStyle:"italic",cursor:"pointer",whiteSpace:"nowrap"}}>EDIT</button>
           </div>
