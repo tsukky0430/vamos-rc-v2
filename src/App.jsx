@@ -330,17 +330,18 @@ function TTPage({ttData,members,onOpenMember,requirePin,ttInfo,onSaveTTInfo}){
     if(!selTTData||!selDist)return [];
     const map={};
     selTTData.trials.filter(t=>t.distance===selDist).forEach(t=>{ if(!map[t.memberId]||t.vdot>map[t.memberId].vdot)map[t.memberId]=t; });
-    // 各メンバーごとに、このTTの記録が「その種目のPB(自己ベスト)」かを判定
+    // 各メンバーごとに、このTT時点で「PB更新」だったかを判定
+    // (その記録より前 or 同日の同種目の記録の中で最速だったか)
     const rows = Object.values(map);
     rows.forEach(row=>{
       const member = members?.find(m=>m.id===row.memberId);
       if(!member){row.isPB=false;return;}
-      // そのメンバーの該当種目の全記録から、最速タイムを取得
-      const allTrials = member.trials.filter(t=>t.distance===selDist);
-      if(!allTrials.length){row.isPB=false;return;}
-      const bestTime = Math.min(...allTrials.map(t=>t.time));
-      // このTTのタイムが全記録中で最速 = PB
-      row.isPB = row.time===bestTime;
+      // 同種目で、この記録の日付以前(同日含む)のものだけ抽出
+      const priorTrials = member.trials.filter(t=>t.distance===selDist&&t.date<=row.date);
+      if(!priorTrials.length){row.isPB=false;return;}
+      // priorTrials の中で最速タイムが、このTTのタイムなら PB更新
+      const bestTimeUpToDate = Math.min(...priorTrials.map(t=>t.time));
+      row.isPB = row.time===bestTimeUpToDate;
     });
     return rows.sort((a,b)=>a.time-b.time);
   },[selTTData,selDist,members]);
@@ -376,15 +377,16 @@ function TTPage({ttData,members,onOpenMember,requirePin,ttInfo,onSaveTTInfo}){
                 <span style={{color:"#333"}}>·</span>
                 <span>{selTTData.trials.length}件の記録</span>
                 {(()=>{
-                  // このTTでPB(自己ベスト)を更新した「メンバー数」を計算 (種目問わず)
+                  // このTTでPB更新した「メンバー数」を計算 (種目問わず、その時点でのPB更新)
                   const pbMembers = new Set();
                   selTTData.trials.forEach(t=>{
                     const member = members?.find(m=>m.id===t.memberId);
                     if(!member) return;
-                    const sameDist = member.trials.filter(tt=>tt.distance===t.distance);
-                    if(!sameDist.length) return;
-                    const bestTime = Math.min(...sameDist.map(tt=>tt.time));
-                    if(t.time===bestTime) pbMembers.add(t.memberId);
+                    // 同種目で、この記録の日付以前(同日含む)のものだけ
+                    const priorSameDist = member.trials.filter(tt=>tt.distance===t.distance&&tt.date<=t.date);
+                    if(!priorSameDist.length) return;
+                    const bestTimeUpToDate = Math.min(...priorSameDist.map(tt=>tt.time));
+                    if(t.time===bestTimeUpToDate) pbMembers.add(t.memberId);
                   });
                   return pbMembers.size>0?(
                     <>
@@ -408,7 +410,7 @@ function TTPage({ttData,members,onOpenMember,requirePin,ttInfo,onSaveTTInfo}){
               </div>
               <div style={{flex:1,minWidth:0,display:"flex",alignItems:"center",gap:6}}>
                 <span className="nm" style={{fontSize:17,letterSpacing:"-.01em",whiteSpace:"nowrap",textAlign:"left",color:"#fff"}}>{row.memberName}</span>
-                {row.isPB&&<span style={{fontSize:10,fontWeight:700,background:"rgba(245,158,11,.15)",color:"#f59e0b",border:"1px solid rgba(245,158,11,.35)",borderRadius:3,padding:"2px 6px",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>PB</span>}
+                {row.isPB&&<span style={{fontSize:10,fontWeight:700,background:"rgba(245,158,11,.15)",color:"#f59e0b",border:"1px solid rgba(245,158,11,.35)",borderRadius:3,padding:"2px 6px",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0,whiteSpace:"nowrap"}}>PB更新</span>}
                 <div style={{flex:1}}/>
                 {row.memberOfficial===false&&<span className="vbadge" style={{color:"#fbbf24",border:"1px solid rgba(251,191,36,.3)",background:"rgba(251,191,36,.08)"}}>オープン</span>}
                 {cat&&<span className="vbadge" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
