@@ -1300,6 +1300,55 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
               ))}
             </div>
 
+            <div style={{marginTop:18,paddingTop:14,borderTop:"1px solid #1f1f1f"}}>
+              <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:16,color:"#fff",fontStyle:"italic",marginBottom:10,display:"flex",alignItems:"center",gap:8}}>
+                <span style={{width:3,height:14,background:"#3b82f6",borderRadius:2}}/>
+                <span>想定タイム</span>
+                <span style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif",fontStyle:"normal",fontWeight:400}}>(現在のVDOTから算出)</span>
+              </div>
+              {(()=>{
+                // VDOTから各距離の予想タイム(秒)を逆算
+                // v(velocity m/min) を解くため Newton-Raphson 法でVO2に応じた timeを求める
+                const v = member.vdot;
+                const distances = [
+                  {d:"1000m",m:1000},
+                  {d:"1500m",m:1500},
+                  {d:"2000m",m:2000},
+                  {d:"3000m",m:3000},
+                  {d:"5000m",m:5000},
+                  {d:"10000m",m:10000},
+                  {d:"ハーフマラソン",m:21097.5},
+                  {d:"マラソン",m:42195},
+                ];
+                // calcVDOT の逆算: 与えられた距離・VDOTからタイムを求める
+                // 2分探索で時間を求める
+                function timeFromVDOT(distM,targetVdot){
+                  let lo=20,hi=20000; // sec
+                  for(let i=0;i<60;i++){
+                    const mid=(lo+hi)/2;
+                    const vd=calcVDOT(distM,mid);
+                    if(vd>targetVdot) lo=mid; else hi=mid;
+                  }
+                  return (lo+hi)/2;
+                }
+                const items = distances.map(({d,m})=>{
+                  const sec = timeFromVDOT(m,v);
+                  const cs = Math.round(sec*100);
+                  return {d, cs};
+                });
+                return (
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(2, 1fr)",gap:6}}>
+                    {items.map(it=>(
+                      <div key={it.d} className="pc" style={{padding:"7px 11px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:6}}>
+                        <span style={{fontSize:11,color:"#aaa",fontFamily:"Noto Sans JP,sans-serif",fontWeight:600}}>{it.d}</span>
+                        <span style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:16,color:"#3b82f6",fontStyle:"italic",lineHeight:1}}>{fmtT(it.cs)}</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+
             <div style={{marginTop:24,paddingTop:18,borderTop:"1px solid #1f1f1f"}}>
               <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:18,color:"#fff",fontStyle:"italic",marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
                 <span style={{width:3,height:16,background:"#ff4d00",borderRadius:2}}/>
