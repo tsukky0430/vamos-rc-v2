@@ -386,6 +386,7 @@ function TTPage({ttData,members,onOpenMember,requirePin,ttInfo,onSaveTTInfo}){
               </div>
               <div style={{flex:1,minWidth:0,display:"flex",alignItems:"center",gap:6}}>
                 <span className="nm" style={{fontSize:17,letterSpacing:"-.01em",whiteSpace:"nowrap",textAlign:"left",color:"#fff"}}>{row.memberName}</span>
+                {row.isPB&&<span style={{fontSize:10,fontWeight:700,background:"rgba(245,158,11,.15)",color:"#f59e0b",border:"1px solid rgba(245,158,11,.35)",borderRadius:3,padding:"2px 6px",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>PB</span>}
                 <div style={{flex:1}}/>
                 {row.memberOfficial===false&&<span className="vbadge" style={{color:"#fbbf24",border:"1px solid rgba(251,191,36,.3)",background:"rgba(251,191,36,.08)"}}>オープン</span>}
                 {cat&&<span className="vbadge" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`}}>{cat.s}</span>}
