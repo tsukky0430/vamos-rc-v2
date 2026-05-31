@@ -490,7 +490,8 @@ const CSS=`
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
 .tab-bar{display:flex;border-bottom:1px solid #252525;overflow-x:auto;scrollbar-width:none;}
 .tab-bar::-webkit-scrollbar{display:none;}
-.ti{background:none;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;color:#444;padding:11px 14px;position:relative;transition:color .2s;white-space:nowrap;flex-shrink:0;}
+.ti{background:none;border:none;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;color:#444;padding:10px 8px;position:relative;transition:color .2s;white-space:nowrap;flex-shrink:0;}
+.tab-bar.main-tabs .ti{flex:1;text-align:center;padding:10px 4px;font-size:11px;}
 .ti.on{color:#f0f0f0;}.ti.on::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:#ff4d00;}
 .ti:not(.on):hover{color:#888;}
 .bb{height:3px;background:#1e1e1e;border-radius:2px;overflow:hidden;margin-top:10px;}
@@ -543,6 +544,7 @@ function App(){
   const [catTab,setCatTab]=useState("ranking");
   const [selCat,setSelCat]=useState("m_elem4");
   const [selOffCat,setSelOffCat]=useState("m_jhs1");
+  const [selOffGender,setSelOffGender]=useState("男子");
   const [selDist,setSelDist]=useState("1000m");
   const [showAddM,setShowAddM]=useState(false);
   const [showAddT,setShowAddT]=useState(false);
@@ -854,12 +856,12 @@ function App(){
               </div>
             </div>
             <div style={{maxWidth:760,margin:"0 auto",padding:"0 16px"}}>
-              <div className="tab-bar">
+              <div className="tab-bar main-tabs">
                 <button className={`ti ${mainTab==="events"?"on":""}`} onClick={()=>setMainTab("events")}>種目別</button>
                 <button className={`ti ${mainTab==="categories"?"on":""}`} onClick={()=>setMainTab("categories")}>年代別</button>
                 <button className={`ti ${mainTab==="tt"?"on":""}`} onClick={()=>setMainTab("tt")}>TT別</button>
-                <button className={`ti ${mainTab==="ranking"?"on":""}`} onClick={()=>setMainTab("ranking")}>VDOTランキング</button>
                 <button className={`ti ${mainTab==="official"?"on":""}`} onClick={()=>setMainTab("official")}>公式戦</button>
+                <button className={`ti ${mainTab==="ranking"?"on":""}`} onClick={()=>setMainTab("ranking")}>VDOTランキング</button>
               </div>
             </div>
           </header>
@@ -1009,15 +1011,29 @@ function App(){
               return (
                 <div className="pi">
                   <div className="card" style={{padding:"16px 18px",marginBottom:14}}>
-                    <div style={{fontSize:8,color:"#444",marginBottom:6,fontFamily:"Noto Sans JP,sans-serif"}}>中学・高校</div>
-                    <div style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:3}}>
-                      {JR_CATS.map(c=>(
-                        <button key={c.id} onClick={()=>setSelOffCat(c.id)}
-                          style={{minWidth:0,padding:"5px 2px",border:`1px solid ${selOffCat===c.id?c.c:"#2e2e2e"}`,borderRadius:4,cursor:"pointer",fontFamily:"Noto Sans JP,sans-serif",fontSize:9,fontWeight:600,background:selOffCat===c.id?`${c.c}18`:"#1a1a1a",color:selOffCat===c.id?c.c:"#555",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
-                          {c.s}
+                    <div style={{display:"flex",gap:6,marginBottom:10}}>
+                      {["男子","女子"].map(g=>(
+                        <button key={g} onClick={()=>{setSelOffGender(g);const newCat=g==="男子"?"m_jhs1":"f_jhs1";setSelOffCat(newCat);}} style={{flex:1,padding:"7px",border:"none",borderRadius:4,cursor:"pointer",fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,fontSize:13,background:selOffGender===g?"#ff4d00":"#1a1a1a",color:selOffGender===g?"#fff":"#555"}}>
+                          {g}
                         </button>
                       ))}
                     </div>
+                    {[
+                      {label:"中学",ids:selOffGender==="男子"?["m_jhs1","m_jhs2","m_jhs3"]:["f_jhs1","f_jhs2","f_jhs3"]},
+                      {label:"高校",ids:selOffGender==="男子"?["m_hs"]:["f_hs"]},
+                    ].map(row=>(
+                      <div key={row.label} style={{marginBottom:6}}>
+                        <div style={{fontSize:8,color:"#444",marginBottom:4,fontFamily:"Noto Sans JP,sans-serif"}}>{row.label}</div>
+                        <div style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gap:3}}>
+                          {row.ids.map(id=>{const c=CMAP[id];if(!c)return null;return(
+                            <button key={id} onClick={()=>setSelOffCat(id)}
+                              style={{minWidth:0,padding:"5px 2px",border:`1px solid ${selOffCat===id?c.c:"#2e2e2e"}`,borderRadius:4,cursor:"pointer",fontFamily:"Noto Sans JP,sans-serif",fontSize:10,fontWeight:600,background:selOffCat===id?`${c.c}18`:"#1a1a1a",color:selOffCat===id?c.c:"#555",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                              {c.s}
+                            </button>
+                          );})}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                   <div className="card" style={{padding:"14px"}}>
                     <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,paddingBottom:12,borderBottom:"1px solid #252525"}}>
