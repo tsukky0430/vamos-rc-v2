@@ -542,6 +542,7 @@ function App(){
   const [searchQ,setSearchQ]=useState("");
   const [catTab,setCatTab]=useState("ranking");
   const [selCat,setSelCat]=useState("m_elem4");
+  const [selOffCat,setSelOffCat]=useState("m_jhs1");
   const [selDist,setSelDist]=useState("1000m");
   const [showAddM,setShowAddM]=useState(false);
   const [showAddT,setShowAddT]=useState(false);
@@ -563,7 +564,8 @@ function App(){
       if(memberMap[t.member_id]){
         memberMap[t.member_id].trials.push({
           id:t.id,distance:t.distance,time:t.time,date:t.date,vdot:Number(t.vdot),
-          category:t.category,event_no:t.event_no,event_name:t.event_name,official:t.official!==false
+          category:t.category,event_no:t.event_no,event_name:t.event_name,official:t.official!==false,
+          is_official_race:t.is_official_race===true
         });
       }
     });
@@ -653,19 +655,41 @@ function App(){
   const catMs=useMemo(()=>{
     const rows=[];
     members.forEach(m=>{
-      const catTrials=m.trials.filter(t=>t.category===selCat&&t.official!==false);
+      const catTrials=m.trials.filter(t=>{
+        if(t.category!==selCat)return false;
+        if(t.official===false)return false;
+        if(t.is_official_race===true){
+          if(selCat.startsWith("m_jhs")||selCat.startsWith("f_jhs")||selCat==="m_hs"||selCat==="f_hs")return false;
+        }
+        return true;
+      });
       if(!catTrials.length)return;
       const best=catTrials.reduce((a,b)=>b.vdot>a.vdot?b:a,catTrials[0]);
       rows.push({...m,catVdot:best.vdot,catBestTrial:best});
     });
     return rows.sort((a,b)=>b.catVdot-a.catVdot);
   },[sorted,selCat]);
-  const catRecs=useMemo(()=>{const map={};members.forEach(m=>m.trials.filter(t=>t.category===selCat&&t.official!==false).forEach(t=>{if(!map[t.distance]||t.vdot>map[t.distance].vdot)map[t.distance]={...t,memberName:m.name};}));return map;},[members,selCat]);
+  const catRecs=useMemo(()=>{const map={};members.forEach(m=>m.trials.filter(t=>{
+    if(t.category!==selCat)return false;
+    if(t.official===false)return false;
+    if(t.is_official_race===true){
+      if(selCat.startsWith("m_jhs")||selCat.startsWith("f_jhs")||selCat==="m_hs"||selCat==="f_hs")return false;
+    }
+    return true;
+  }).forEach(t=>{if(!map[t.distance]||t.vdot>map[t.distance].vdot)map[t.distance]={...t,memberName:m.name};}));return map;},[members,selCat]);
   // 種目ごとの選択カテゴリーTop3
   const catTopByDist=useMemo(()=>{
     const map={};
     members.forEach(m=>{
-      m.trials.filter(t=>t.category===selCat&&t.official!==false).forEach(t=>{
+      m.trials.filter(t=>{
+        if(t.category!==selCat)return false;
+        if(t.official===false)return false;
+        // ジュニア公式戦は除外
+        if(t.is_official_race===true){
+          if(selCat.startsWith("m_jhs")||selCat.startsWith("f_jhs")||selCat==="m_hs"||selCat==="f_hs")return false;
+        }
+        return true;
+      }).forEach(t=>{
         const d=t.distance;
         if(!map[d])map[d]=[];
         const existingIdx=map[d].findIndex(r=>r.memberId===m.id);
@@ -699,7 +723,16 @@ function App(){
   const distRanking=useMemo(()=>{
     const rows=[];
     members.forEach(m=>{
-      const ts=m.trials.filter(t=>t.distance===selDist&&t.official!==false);
+      // ジュニア(中学・高校)の公式戦記録は通常ランキングから除外
+      const ts=m.trials.filter(t=>{
+        if(t.distance!==selDist)return false;
+        if(t.official===false)return false;
+        if(t.is_official_race===true){
+          const cat=t.category||m.category;
+          if(cat&&(cat.startsWith("m_jhs")||cat.startsWith("f_jhs")||cat==="m_hs"||cat==="f_hs"))return false;
+        }
+        return true;
+      });
       if(!ts.length)return;
       const best=ts.reduce((a,b)=>b.vdot>a.vdot?b:a,ts[0]);
       rows.push({memberId:m.id,name:m.name,category:best.category||m.category,time:best.time,vdot:best.vdot,date:best.date,event_name:best.event_name,official:true});
@@ -757,7 +790,7 @@ function App(){
   async function delTrial(tid){await sb.from("trials").delete().eq("id",tid);setFlash(n=>n+1);}
   function openEdit(t){
     const [hh,mm,ss,cc]=[Math.floor(t.time/360000),Math.floor((t.time%360000)/6000),Math.floor((t.time%6000)/100),t.time%100];
-    setEF({distance:t.distance,h:hh>0?String(hh):"",m:String(mm),s:String(ss).padStart(2,"0"),cs:String(cc).padStart(2,"0"),date:t.date,category:t.category||"",event_no:t.event_no?String(t.event_no):"",event_name_input:t.event_name&&!t.event_no?t.event_name:"",official:t.official!==false});
+    setEF({distance:t.distance,h:hh>0?String(hh):"",m:String(mm),s:String(ss).padStart(2,"0"),cs:String(cc).padStart(2,"0"),date:t.date,category:t.category||"",event_no:t.event_no?String(t.event_no):"",event_name_input:t.event_name&&!t.event_no?t.event_name:"",official:t.official!==false,is_official_race:t.is_official_race===true});
     setEditTrial(t);
   }
   async function saveTrial(){
@@ -766,7 +799,7 @@ function App(){
     const eno=eForm.event_no?parseInt(eForm.event_no):null;
     const enm=eno?`第${eno}回TT`:eForm.event_name_input.trim()||null;
     const vdot=calcVDOT(DIST[eForm.distance],cs2sec(time));
-    await sb.from("trials").update({distance:eForm.distance,time,date:eForm.date,vdot,category:cat,event_no:eno,event_name:enm,official:eForm.official!==false}).eq("id",editTrial.id);
+    await sb.from("trials").update({distance:eForm.distance,time,date:eForm.date,vdot,category:cat,event_no:eno,event_name:enm,official:eForm.official!==false,is_official_race:eForm.is_official_race===true}).eq("id",editTrial.id);
     setEditTrial(null);setFlash(n=>n+1);
   }
   async function delMember(id){
@@ -826,6 +859,7 @@ function App(){
                 <button className={`ti ${mainTab==="categories"?"on":""}`} onClick={()=>setMainTab("categories")}>年代別</button>
                 <button className={`ti ${mainTab==="tt"?"on":""}`} onClick={()=>setMainTab("tt")}>TT別</button>
                 <button className={`ti ${mainTab==="ranking"?"on":""}`} onClick={()=>setMainTab("ranking")}>VDOTランキング</button>
+                <button className={`ti ${mainTab==="official"?"on":""}`} onClick={()=>setMainTab("official")}>公式戦</button>
               </div>
             </div>
           </header>
@@ -948,6 +982,82 @@ function App(){
                 {!members.length&&<Empty label="メンバーがいません"/>}
               </div>
             )}
+
+            {mainTab==="official"&&(()=>{
+              // ジュニアカテゴリのみ
+              const JR_CATS = CATS.filter(c=>c.id.startsWith("m_jhs")||c.id.startsWith("f_jhs")||c.id==="m_hs"||c.id==="f_hs");
+              const selOffCO = CMAP[selOffCat]||JR_CATS[0];
+              // 公式戦のみ抽出（選択カテゴリ）
+              const offTopByDist = {};
+              members.forEach(m=>{
+                m.trials.filter(t=>t.category===selOffCat&&t.is_official_race===true).forEach(t=>{
+                  const d=t.distance;
+                  if(!offTopByDist[d])offTopByDist[d]=[];
+                  const existingIdx=offTopByDist[d].findIndex(r=>r.memberId===m.id);
+                  if(existingIdx>=0){
+                    if(t.time<offTopByDist[d][existingIdx].time){
+                      offTopByDist[d][existingIdx]={memberId:m.id,memberName:m.name,...t};
+                    }
+                  }else{
+                    offTopByDist[d].push({memberId:m.id,memberName:m.name,...t});
+                  }
+                });
+              });
+              Object.keys(offTopByDist).forEach(d=>{
+                offTopByDist[d].sort((a,b)=>a.time-b.time);
+              });
+              return (
+                <div className="pi">
+                  <div className="card" style={{padding:"16px 18px",marginBottom:14}}>
+                    <div style={{fontSize:8,color:"#444",marginBottom:6,fontFamily:"Noto Sans JP,sans-serif"}}>中学・高校</div>
+                    <div style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:3}}>
+                      {JR_CATS.map(c=>(
+                        <button key={c.id} onClick={()=>setSelOffCat(c.id)}
+                          style={{minWidth:0,padding:"5px 2px",border:`1px solid ${selOffCat===c.id?c.c:"#2e2e2e"}`,borderRadius:4,cursor:"pointer",fontFamily:"Noto Sans JP,sans-serif",fontSize:9,fontWeight:600,background:selOffCat===c.id?`${c.c}18`:"#1a1a1a",color:selOffCat===c.id?c.c:"#555",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                          {c.s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="card" style={{padding:"14px"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,paddingBottom:12,borderBottom:"1px solid #252525"}}>
+                      <div style={{width:4,height:32,background:selOffCO.c,borderRadius:2,flexShrink:0}}/>
+                      <div>
+                        <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:20,color:selOffCO.c,fontStyle:"italic"}}>{selOffCO.l} 公式戦</div>
+                        <div style={{fontSize:10,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>公式トラックレースのみ</div>
+                      </div>
+                    </div>
+                    {Object.keys(offTopByDist).length===0&&<Empty label="この年代の公式戦記録がありません"/>}
+                    {DK.filter(d=>offTopByDist[d]&&offTopByDist[d].length>0).map((dist,di)=>(
+                      <div key={dist} style={{marginBottom:di===DK.filter(d=>offTopByDist[d]&&offTopByDist[d].length>0).length-1?0:18}}>
+                        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,paddingBottom:6,borderBottom:`1px solid ${selOffCO.c}28`}}>
+                          <div style={{width:3,height:14,background:selOffCO.c,borderRadius:2}}/>
+                          <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:16,color:selOffCO.c,fontStyle:"italic"}}>{dist}</div>
+                          <div style={{fontSize:9,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{offTopByDist[dist].length}件</div>
+                        </div>
+                        {offTopByDist[dist].map((row,i)=>{const rk=getRank(offTopByDist[dist],i,r=>r.time);const rd=rankDisplay(rk);return(
+                          <div key={row.id} style={{display:"flex",alignItems:"center",gap:10,padding:"6px 10px",background:rk===1?"rgba(245,158,11,.05)":"#141414",border:`1px solid ${rk===1?"rgba(245,158,11,.2)":"#252525"}`,borderRadius:6,marginBottom:4,cursor:"pointer"}} onClick={()=>openM(row.memberId)}>
+                            <div style={{width:24,textAlign:"center",flexShrink:0,fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:14,color:rk===1?"#f59e0b":rk===2?"#9ca3af":rk===3?"#cd7c32":"#444"}}>{rd.medal}</div>
+                            <div style={{flex:1,minWidth:0}}>
+                              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,flexWrap:"nowrap"}}>
+                                <span className="nm" style={{fontSize:14,whiteSpace:"nowrap",textAlign:"left",color:"#fff"}}>{row.memberName}</span>
+                                <div style={{flex:1}}/>
+                                {row.event_name&&<span style={{fontSize:9,color:"#3b82f6",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>{row.event_name}</span>}
+                              </div>
+                              <div style={{fontSize:9,color:"#555",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(row.date)}</div>
+                            </div>
+                            <div style={{textAlign:"right",flexShrink:0}}>
+                              <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:20,color:"#e0e0e0",lineHeight:1,fontStyle:"italic"}}>{fmtT(row.time)}</div>
+                              <div style={{fontSize:9,color:vc(row.vdot),fontFamily:"Barlow Condensed,sans-serif",fontWeight:700,marginTop:2}}>VDOT {row.vdot.toFixed(1)}</div>
+                            </div>
+                          </div>
+                        );})}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </main>
         </div>
       )}
@@ -1266,6 +1376,17 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
                     <FF label="日付"><input className="inp" type="date" value={eForm.date} onChange={e=>setEF(f=>({...f,date:e.target.value}))}/></FF>
                     <VP distance={eForm.distance} h={eForm.h} m={eForm.m} s={eForm.s} cs={eForm.cs}/>
                     <OfficialToggle value={eForm.official!==false} onChange={v=>setEF(f=>({...f,official:v}))}/>
+                    <FF label="公式戦かどうか">
+                      <div style={{display:"flex",gap:8}}>
+                        {[{v:false,l:"通常記録",desc:"TT・その他"},{v:true,l:"公式戦",desc:"公式トラックレース"}].map(opt=>(
+                          <button key={String(opt.v)} onClick={()=>setEF(f=>({...f,is_official_race:opt.v}))}
+                            style={{flex:1,padding:"9px 8px",border:`1px solid ${(eForm.is_official_race===true)===opt.v?(opt.v?"#3b82f6":"#6b7280"):"#2e2e2e"}`,borderRadius:6,cursor:"pointer",background:(eForm.is_official_race===true)===opt.v?(opt.v?"rgba(59,130,246,.12)":"rgba(107,114,128,.12)"):"#141414",transition:"all .2s"}}>
+                            <div style={{fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,fontSize:12,color:(eForm.is_official_race===true)===opt.v?(opt.v?"#60a5fa":"#9ca3af"):"#555",marginBottom:2}}>{opt.l}</div>
+                            <div style={{fontFamily:"Noto Sans JP,sans-serif",fontSize:9,color:(eForm.is_official_race===true)===opt.v?"#666":"#444"}}>{opt.desc}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </FF>
                     <div style={{display:"flex",gap:8}}>
                       <button className="bg" style={{flex:1}} onClick={onCancelEdit}>キャンセル</button>
                       <button style={{flex:1,background:"transparent",color:"#ef4444",border:"1px solid rgba(239,68,68,.3)",borderRadius:4,fontSize:13,fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,cursor:"pointer",padding:"9px"}} onClick={()=>{if(confirm("この記録を削除しますか？")){onDelTrial(editTrial.id);onCancelEdit();}}}>削除</button>
