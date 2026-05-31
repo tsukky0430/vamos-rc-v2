@@ -1306,13 +1306,16 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><span style={{fontSize:15}}>🏆</span><div style={{fontSize:11,color:"#f59e0b",fontWeight:700,fontFamily:"Noto Sans JP,sans-serif"}}>種目別自己ベスト</div></div>
                 <div style={{display:"flex",flexDirection:"column",gap:8}}>
                   {DK.filter(d=>pbByDist[d]).map(d=>{const t=pbByDist[d];const c=vc(t.vdot);return(
-                    <div key={d} style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                      <div>
-                        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,flexWrap:"wrap"}}><span style={{fontSize:10,color:"#666",fontFamily:"Noto Sans JP,sans-serif"}}>{d}</span>{t.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif"}}>{t.event_name}</span>}</div>
+                    <div key={d} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10}}>
+                      <div style={{flex:1,minWidth:0,overflow:"hidden"}}>
+                        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2,whiteSpace:"nowrap",overflow:"hidden"}}>
+                          <span style={{fontSize:10,color:"#666",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>{d}</span>
+                          {t.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>{t.event_name}</span>}
+                        </div>
                         <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:24,color:"#f0f0f0",lineHeight:1,fontStyle:"italic"}}>{fmtT(t.time)}</div>
                         <div style={{fontSize:9,color:"#555",fontFamily:"Noto Sans JP,sans-serif",marginTop:2}}>{fmtD(t.date)}</div>
                       </div>
-                      <div style={{textAlign:"right"}}>
+                      <div style={{textAlign:"right",flexShrink:0}}>
                         <div style={{fontFamily:"Barlow Condensed,sans-serif",fontWeight:900,fontSize:20,color:c,fontStyle:"italic"}}>{t.vdot.toFixed(1)}</div>
                         <div style={{fontSize:9,color:"#444",fontFamily:"Noto Sans JP,sans-serif"}}>VDOT</div>
                       </div>
