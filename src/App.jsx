@@ -1332,13 +1332,13 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
             )}
             {display.map((t,i)=>{ const isPB=pbTrialIds.has(t.id),tc=vc(t.vdot); return (
               <div key={t.id} className={`tr fu ${isPB?"pb":""}`} style={{animationDelay:`${i*28}ms`,cursor:"pointer"}} onContextMenu={e=>{e.preventDefault();onEditTrial(t);}} onTouchStart={e=>{const timer=setTimeout(()=>onEditTrial(t),600);e.currentTarget._lp=timer;}} onTouchEnd={e=>{clearTimeout(e.currentTarget._lp);}} onTouchMove={e=>{clearTimeout(e.currentTarget._lp);}}>
-                <div style={{flexShrink:0,width:120,minWidth:120}}>
+                <div style={{flexShrink:0,width:120,minWidth:120,overflow:"hidden"}}>
                   <div style={{fontSize:11,color:"#888",fontFamily:"Noto Sans JP,sans-serif"}}>{fmtD(t.date)}</div>
-                  <div style={{display:"flex",alignItems:"center",gap:4,marginTop:2,flexWrap:"nowrap",overflow:"hidden"}}>
-                    {t.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,flexShrink:1}}>{t.event_name}</span>}
-                    {!t.event_name&&t.id===display[0].id&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>最新</span>}
+                  <div style={{display:"flex",alignItems:"center",gap:4,marginTop:2,flexWrap:"nowrap",overflow:"hidden",width:"100%"}}>
                     {t.category&&CMAP[t.category]&&<span className="cp" style={{fontSize:9,background:`${CMAP[t.category].c}15`,color:CMAP[t.category].c,border:`1px solid ${CMAP[t.category].c}28`,flexShrink:0}}>{CMAP[t.category].s}</span>}
                     {catRankMap&&catRankMap[t.id]&&<span style={{fontSize:10,flexShrink:0}}>{catRankMap[t.id].medal}</span>}
+                    {t.event_name&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0,flexShrink:1}}>{t.event_name}</span>}
+                    {!t.event_name&&t.id===display[0].id&&<span style={{fontSize:9,color:"#ff4d00",fontFamily:"Noto Sans JP,sans-serif",flexShrink:0}}>最新</span>}
                   </div>
                 </div>
                 <div style={{flex:1,minWidth:0}}>
