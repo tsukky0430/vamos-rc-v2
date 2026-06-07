@@ -811,7 +811,10 @@ function App(){
   }
   async function renameMember(id,newName){
     if(!newName||!newName.trim())return;
-    await sb.from("members").update({name:newName.trim()}).eq("id",id);
+    const trimmed = newName.trim();
+    // ローカルstateを先に更新（同じidで名前のみ変更、別人格化を防ぐ）
+    setMembers(prev=>prev.map(m=>m.id===id?{...m,name:trimmed}:m));
+    await sb.from("members").update({name:trimmed}).eq("id",id);
     setFlash(n=>n+1);
   }
 
