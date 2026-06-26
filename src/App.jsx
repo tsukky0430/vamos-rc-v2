@@ -828,7 +828,7 @@ function App(){
   if(loading)return(
     <div style={{minHeight:"100dvh",display:"flex",alignItems:"center",justifyContent:"center",background:"#0d0d0d"}}>
       <div style={{textAlign:"center"}}>
-        <div style={{transform:"scale(1.5)",marginBottom:18}}><div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:26,fontStyle:"italic",color:"#fff"}}>VAMOS<span style={{color:"#ff4d00"}}>RC</span></div></div>
+        <div style={{transform:"scale(1.5)",marginBottom:18}}><img src="/vamos-logo-header.png" alt="Vamos Running Club" style={{height:40,width:"auto",display:"block"}}/></div>
         <div style={{fontSize:11,color:"#444",fontFamily:"Noto Sans JP,sans-serif"}}>読み込み中...</div>
       </div>
     </div>
@@ -857,7 +857,7 @@ function App(){
           <header className="sh">
             <div style={{maxWidth:760,margin:"0 auto",padding:"0 16px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",height:58}}>
-                <div onContextMenu={e=>{e.preventDefault();loadVisits();setShowVisits(true);}} onTouchStart={e=>{const timer=setTimeout(()=>{loadVisits();setShowVisits(true);},700);e.currentTarget._lp=timer;}} onTouchEnd={e=>clearTimeout(e.currentTarget._lp)} onTouchMove={e=>clearTimeout(e.currentTarget._lp)} style={{cursor:"pointer",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}><div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:26,fontStyle:"italic",color:"#fff"}}>VAMOS<span style={{color:"#ff4d00"}}>RC</span></div></div>
+                <div onContextMenu={e=>{e.preventDefault();loadVisits();setShowVisits(true);}} onTouchStart={e=>{const timer=setTimeout(()=>{loadVisits();setShowVisits(true);},700);e.currentTarget._lp=timer;}} onTouchEnd={e=>clearTimeout(e.currentTarget._lp)} onTouchMove={e=>clearTimeout(e.currentTarget._lp)} style={{cursor:"pointer",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none"}}><img src="/vamos-logo-header.png" alt="Vamos Running Club" style={{height:40,width:"auto",display:"block"}}/></div>
                 <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
                   <button style={{fontSize:11,padding:"6px 10px",display:"flex",alignItems:"center",gap:5,background:"rgba(255,255,255,.12)",color:"#fff",border:"1px solid rgba(255,255,255,.3)",borderRadius:4,fontFamily:"Noto Sans JP,sans-serif",fontWeight:700,cursor:"pointer"}} onClick={()=>setShowSearch(true)}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
