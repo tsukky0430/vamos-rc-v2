@@ -79,11 +79,11 @@ const SEED=[
   {id:9,name:"木村 翔",category:"m_hs",official:false,trials:[mkT("1000m",0,2,58,"2024-06-15","m_hs",7),mkT("5000m",0,16,20,"2024-09-20","m_hs",null,"高校オープン記録会")]},
 ];
 const enrich = (m) => {
-  if(!m.trials.length) return {...m,vdot:0,bestTrial:null,currentCategory:m.category,currentOfficial:m.official};
+  if(!m.trials.length) return {...m,vdot:0,bestTrial:null,currentCategory:m.category,currentOfficial:m.official!==false};
   const best=m.trials.reduce((a,b)=>b.vdot>a.vdot?b:a,m.trials[0]);
-  // 最新の記録（日付が一番新しいもの）からカテゴリーとofficialを取得
+  // 最新の記録（日付が一番新しいもの）からカテゴリーを取得。公式/オープンはメンバー区分を使う（編集可能な単一の判定）
   const latest=m.trials.reduce((a,b)=>a.date>b.date?a:b,m.trials[0]);
-  return {...m,vdot:best.vdot,bestTrial:best,currentCategory:latest.category||m.category,currentOfficial:latest.official!==false};
+  return {...m,vdot:best.vdot,bestTrial:best,currentCategory:latest.category||m.category,currentOfficial:m.official!==false};
 };
 
 function useRipple(){
@@ -817,6 +817,13 @@ function App(){
     await sb.from("members").update({name:trimmed}).eq("id",id);
     setFlash(n=>n+1);
   }
+  async function setMemberOfficial(id,val){
+    // メンバー区分と、そのメンバーの全記録の区分をまとめて更新（全ページのタグを一括で揃える）
+    setMembers(prev=>prev.map(m=>m.id===id?{...m,official:val,currentOfficial:val,trials:m.trials.map(t=>({...t,official:val}))}:m));
+    await sb.from("members").update({official:val}).eq("id",id);
+    await sb.from("trials").update({official:val}).eq("member_id",id);
+    setFlash(n=>n+1);
+  }
 
   if(loading)return(
     <div style={{minHeight:"100dvh",display:"flex",alignItems:"center",justifyContent:"center",background:"#0d0d0d"}}>
@@ -841,7 +848,8 @@ function App(){
           eForm={eForm} setEF={setEF}
           onSaveTrial={()=>{requirePin(saveTrial);}}
           onCancelEdit={()=>setEditTrial(null)}
-          onRenameMember={(newName)=>requirePin(()=>renameMember(am.id,newName))}/>
+          onRenameMember={(newName)=>requirePin(()=>renameMember(am.id,newName))}
+          onSetOfficial={(val)=>requirePin(()=>setMemberOfficial(am.id,val))}/>
       )}
 
       {page==="ranking"&&(
@@ -1232,7 +1240,7 @@ function App(){
   );
 }
 
-function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,catRankMap,onEditTrial,editTrial,eForm,setEF,onSaveTrial,onCancelEdit,onRenameMember}){
+function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,catRankMap,onEditTrial,editTrial,eForm,setEF,onSaveTrial,onCancelEdit,onRenameMember,onSetOfficial}){
   const [tab,setTab]=useState("history");
   const [openPrinciple,setOpenPrinciple]=useState(null);
   const [showRenameModal,setShowRenameModal]=useState(false);
@@ -1269,7 +1277,10 @@ function MemberPage({member,onBack,onAddTrial,onDelTrial,onDelMember,requirePin,
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"nowrap",minWidth:0}}>
                 <span onContextMenu={e=>{e.preventDefault();setRenameInput(member.name);setShowRenameModal(true);}} onTouchStart={e=>{const timer=setTimeout(()=>{setRenameInput(member.name);setShowRenameModal(true);},600);e.currentTarget._lp=timer;}} onTouchEnd={e=>clearTimeout(e.currentTarget._lp)} onTouchMove={e=>clearTimeout(e.currentTarget._lp)} className="nm" style={{fontSize:30,letterSpacing:"-.01em",whiteSpace:"nowrap",color:"#fff",cursor:"pointer",userSelect:"none",WebkitUserSelect:"none",WebkitTouchCallout:"none",lineHeight:1.3,padding:"4px 0",display:"inline-block",textAlign:"left"}} title="長押しで名前を編集">{member.name}</span>
                 <div style={{flex:1}}/>
-                {member.currentOfficial===false&&<span style={{fontSize:10,fontFamily:"Noto Sans JP,sans-serif",fontWeight:600,color:"#fbbf24",border:"1px solid rgba(251,191,36,.3)",background:"rgba(251,191,36,.08)",padding:"2px 6px",borderRadius:3,flexShrink:0}}>オープン</span>}
+                {(()=>{const isOpen=member.currentOfficial===false;return(
+                  <span onClick={()=>{if(window.confirm(isOpen?`「${member.name}」を公式メンバーに変更しますか？`:`「${member.name}」をオープン参加に変更しますか？`))onSetOfficial(isOpen);}} title="タップで公式／オープンを切替"
+                    style={{fontSize:10,fontFamily:"Noto Sans JP,sans-serif",fontWeight:600,cursor:"pointer",flexShrink:0,padding:"2px 6px",borderRadius:3,...(isOpen?{color:"#fbbf24",border:"1px solid rgba(251,191,36,.3)",background:"rgba(251,191,36,.08)"}:{color:"#555",border:"1px solid #2a2a2a",background:"#161616"})}}>{isOpen?"オープン":"公式"}</span>
+                );})()}
                 {cat&&<span className="cp" style={{background:`${cat.c}15`,color:cat.c,border:`1px solid ${cat.c}28`,flexShrink:0,fontSize:11,padding:"2px 7px"}}>{cat.s}</span>}
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:14}}>
